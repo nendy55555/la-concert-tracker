@@ -1,0 +1,2233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>LA Concerts 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #06060c;
+      --bg-surface: #0c0c18;
+      --bg-card: #10101f;
+      --bg-elevated: #16162a;
+      --border: #1e1e3a;
+      --border-hover: #2e2e5a;
+      --text-primary: #e0e0f0;
+      --text-secondary: #7878a0;
+      --text-dim: #4a4a6e;
+      --neon-cyan: #00f0ff;
+      --neon-magenta: #ff2d78;
+      --neon-amber: #ffd740;
+      --neon-cyan-dim: rgba(0, 240, 255, 0.15);
+      --neon-magenta-dim: rgba(255, 45, 120, 0.12);
+      --neon-amber-dim: rgba(255, 215, 64, 0.12);
+      --glow-cyan: 0 0 20px rgba(0, 240, 255, 0.3);
+      --glow-magenta: 0 0 20px rgba(255, 45, 120, 0.3);
+      --glow-amber: 0 0 20px rgba(255, 215, 64, 0.25);
+      --font-display: 'Orbitron', sans-serif;
+      --font-body: 'IBM Plex Mono', monospace;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* SCAN-LINE OVERLAY */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.06) 2px,
+        rgba(0, 0, 0, 0.06) 4px
+      );
+    }
+
+    /* NOISE TEXTURE */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 32px 20px;
+      position: relative;
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-magenta), transparent);
+      opacity: 0.5;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 4px;
+    }
+    h1 {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 30px rgba(0, 240, 255, 0.4), 0 0 60px rgba(0, 240, 255, 0.15);
+    }
+    .header-year {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 400;
+      color: var(--neon-magenta);
+      text-shadow: 0 0 20px rgba(255, 45, 120, 0.3);
+      letter-spacing: 0.05em;
+    }
+    .subtitle {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+
+    /* SEARCH */
+    .search-wrap { position: relative; width: 100%; max-width: 420px; margin-top: 14px; }
+    .search-input {
+      width: 100%;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px 10px 36px;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-input::placeholder { color: var(--text-dim); }
+    .search-input:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
+    }
+    .search-icon {
+      position: absolute;
+      left: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+    .search-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      max-height: 280px;
+      overflow-y: auto;
+      z-index: 200;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    }
+    .search-dropdown.open { display: block; }
+    .search-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      transition: background 0.1s, color 0.1s;
+      border-bottom: 1px solid var(--border);
+    }
+    .search-item:last-child { border-bottom: none; }
+    .search-item:hover, .search-item.highlighted {
+      background: var(--neon-cyan-dim);
+      color: var(--neon-cyan);
+    }
+
+    /* ALERT BANNERS */
+    .alert-strip {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 32px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    .alert-strip .badge {
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.65rem;
+      letter-spacing: 0.05em;
+    }
+    .badge-cyan { background: var(--neon-cyan-dim); color: var(--neon-cyan); }
+    .badge-amber { background: var(--neon-amber-dim); color: var(--neon-amber); }
+    .badge-magenta { background: var(--neon-magenta-dim); color: var(--neon-magenta); }
+    .alert-strip button {
+      margin-left: auto;
+      background: transparent;
+      color: var(--neon-cyan);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px 12px;
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .alert-strip button:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: var(--glow-cyan);
+    }
+    .alert-strip.artist-alert { cursor: pointer; display: none; }
+    .alert-strip.artist-alert.show { display: flex; }
+    .alert-strip.artist-alert:hover { background: var(--bg-card); }
+
+    /* FILTERS */
+    .filters-bar {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .filter-label {
+      font-family: var(--font-display);
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      font-weight: 600;
+      min-width: 48px;
+    }
+    .filter-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+    .filter-chip {
+      background: var(--bg-card);
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px 10px;
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .filter-chip:hover { border-color: var(--neon-cyan); color: var(--text-secondary); }
+    .filter-chip.active {
+      background: var(--neon-cyan-dim);
+      color: var(--neon-cyan);
+      border-color: rgba(0, 240, 255, 0.3);
+    }
+    .filter-chip.select-all { font-weight: 700; }
+    .result-count {
+      margin-left: auto;
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+    }
+    .result-count span { color: var(--neon-cyan); }
+
+    /* VIEW TABS */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 32px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .view-tab {
+      background: transparent;
+      color: var(--text-dim);
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 12px 20px;
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .view-tab:hover { color: var(--text-secondary); }
+    .view-tab.active {
+      color: var(--neon-cyan);
+      border-bottom-color: var(--neon-cyan);
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+    }
+
+    /* MONTH NAV */
+    .month-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      padding: 18px 32px 6px;
+    }
+    .nav-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-btn:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      box-shadow: var(--glow-cyan);
+    }
+    .month-label {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      min-width: 240px;
+      text-align: center;
+      color: var(--text-primary);
+    }
+    .month-dots {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      padding: 8px 32px 14px;
+    }
+    .month-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .month-dot:hover { background: var(--neon-cyan); box-shadow: var(--glow-cyan); }
+    .month-dot.active {
+      background: var(--neon-cyan);
+      transform: scale(1.5);
+      box-shadow: var(--glow-cyan);
+    }
+    .month-dot.has-events { background: var(--border-hover); }
+
+    /* LEGEND */
+    .legend-wrap { padding: 4px 24px 10px; max-width: 1400px; margin: 0 auto; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; }
+    .legend-item {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 0.65rem; color: var(--text-dim);
+      cursor: pointer;
+      padding: 3px 8px 3px 5px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      transition: all 0.15s;
+      font-family: var(--font-body);
+    }
+    .legend-item:hover { border-color: var(--border); color: var(--text-secondary); }
+    .legend-swatch { width: 14px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+    /* CALENDAR GRID */
+    .calendar-wrap { padding: 0 24px 32px; max-width: 1400px; margin: 0 auto; }
+    .cal-header-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+    .cal-header-day {
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 0.58rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      padding: 8px 0;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-auto-rows: 185px;
+      gap: 4px;
+    }
+    .cal-cell {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    .cal-cell.has-events { cursor: pointer; }
+    .cal-cell.has-events:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+      background: var(--bg-elevated);
+    }
+    .cal-cell.empty { background: transparent; border-color: transparent; }
+    .cal-cell.today {
+      border-color: var(--neon-magenta);
+      box-shadow: 0 0 12px rgba(255, 45, 120, 0.15);
+    }
+    .cal-cell.today .day-num { color: var(--neon-magenta); }
+    .cal-cell.has-watched { border-color: rgba(255, 215, 64, 0.3); }
+    .day-num {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    .day-label {
+      display: none;
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+    .event-chip {
+      font-size: 0.64rem;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    .event-chip.watched-artist {
+      border: 1px solid rgba(255, 215, 64, 0.5);
+      box-shadow: 0 0 6px rgba(255, 215, 64, 0.15);
+    }
+    .event-chip.watched-artist::before {
+      content: '\2605 ';
+      color: var(--neon-amber);
+    }
+    .more-events {
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      margin-top: auto;
+      font-style: italic;
+    }
+
+    /* Genre chip colors — neon palette */
+    .genre-hiphop { background: rgba(190, 50, 255, 0.15); color: #c87dff; border-left: 2px solid #9c27b0; }
+    .genre-electronic { background: rgba(0, 180, 255, 0.12); color: #50d4ff; border-left: 2px solid #0096d1; }
+    .genre-rock { background: rgba(255, 90, 50, 0.12); color: #ff7f50; border-left: 2px solid #e65100; }
+    .genre-pop { background: rgba(255, 45, 120, 0.12); color: #ff6b9d; border-left: 2px solid #e91e63; }
+    .genre-indie { background: rgba(0, 230, 160, 0.1); color: #50e8aa; border-left: 2px solid #00b87a; }
+    .genre-punk { background: rgba(255, 60, 60, 0.12); color: #ff6b6b; border-left: 2px solid #d32f2f; }
+
+    /* LIST VIEW */
+    .list-wrap {
+      padding: 0 24px 32px;
+      max-width: 1000px;
+      margin: 0 auto;
+      display: none;
+    }
+    .list-wrap.active { display: block; }
+    .list-date-group { margin-bottom: 16px; }
+    .list-date-header {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      padding: 10px 0 8px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .list-event {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 2px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-left: 2px solid transparent;
+    }
+    .list-event:hover { background: var(--bg-card); }
+    .list-event.watched-artist {
+      background: var(--neon-amber-dim);
+      border-left-color: var(--neon-amber);
+    }
+    .list-event-name { font-weight: 600; font-size: 0.82rem; flex: 1; }
+    .list-event-venue { font-size: 0.7rem; color: var(--text-dim); }
+    .list-event-genre {
+      font-size: 0.62rem;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+    }
+    .watchlist-star {
+      cursor: pointer;
+      font-size: 1rem;
+      transition: transform 0.15s;
+      user-select: none;
+      filter: grayscale(0.5);
+    }
+    .watchlist-star:hover { transform: scale(1.3); filter: none; }
+    .watchlist-star.active { filter: none; color: var(--neon-amber); }
+    .wl-star-badge {
+      color: var(--neon-amber);
+      font-size: 0.68rem;
+      margin-right: 3px;
+    }
+
+    /* MY ARTISTS VIEW */
+    .my-artists-wrap {
+      padding: 0 24px 32px;
+      max-width: 1000px;
+      margin: 0 auto;
+      display: none;
+    }
+    .my-artists-wrap.active { display: block; }
+
+    .ma-section { margin-bottom: 28px; }
+    .ma-section-title {
+      font-family: var(--font-display);
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-dim);
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ma-count {
+      font-family: var(--font-display);
+      font-size: 0.6rem;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .ma-count.cyan { background: var(--neon-cyan-dim); color: var(--neon-cyan); }
+    .ma-count.dim { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+
+    /* Upcoming shows table */
+    .ma-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .ma-table th {
+      font-family: var(--font-display);
+      font-size: 0.55rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      padding: 0 14px 10px 0;
+      text-align: left;
+    }
+    .ma-table td {
+      padding: 10px 14px 10px 0;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      font-size: 0.8rem;
+    }
+    .ma-table tr:last-child td { border-bottom: none; }
+    .ma-table tr:hover td { background: var(--neon-cyan-dim); }
+    .ma-artist-cell {
+      font-weight: 700;
+      color: var(--neon-amber);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ma-artist-cell .star-icon { font-size: 0.6rem; opacity: 0.7; }
+    .ma-date-cell { color: var(--text-primary); white-space: nowrap; }
+    .ma-venue-cell { color: var(--text-dim); font-size: 0.75rem; }
+    .ma-ticket-cell { white-space: nowrap; }
+    .ma-ticket-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      background: var(--neon-amber-dim);
+      color: var(--neon-amber);
+      border: 1px solid rgba(255, 215, 64, 0.2);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .ma-ticket-link:hover {
+      border-color: var(--neon-amber);
+      box-shadow: var(--glow-amber);
+    }
+
+    /* Saved shows section */
+    .ma-saved-list { display: flex; flex-direction: column; gap: 8px; }
+
+    /* Watching pills */
+    .ma-watching-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .ma-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 5px 8px 5px 12px;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pill-remove {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 0.65rem;
+      padding: 0;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    .pill-remove:hover { color: var(--neon-magenta); }
+    .ma-pill-matched { border-color: rgba(0, 240, 255, 0.25); color: var(--text-secondary); }
+
+    /* Add artist section */
+    .ma-add-section {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .ma-add-title {
+      font-family: var(--font-display);
+      font-size: 0.55rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+    .ma-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .ma-input {
+      flex: 1;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .ma-input::placeholder { color: var(--text-dim); }
+    .ma-input:focus { border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0, 240, 255, 0.1); }
+    .ma-add-btn {
+      background: var(--neon-cyan-dim);
+      color: var(--neon-cyan);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: var(--radius-sm);
+      padding: 10px 18px;
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .ma-add-btn:hover { box-shadow: var(--glow-cyan); border-color: var(--neon-cyan); }
+
+    .ma-empty {
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+    .ma-no-shows {
+      color: var(--text-dim);
+      font-size: 0.78rem;
+      padding: 10px 0;
+      line-height: 1.6;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 6, 12, 0.85);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      max-width: 560px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 240, 255, 0.05);
+      position: relative;
+    }
+    .modal::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: var(--radius-lg);
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), transparent, rgba(255, 45, 120, 0.2));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    .modal-header {
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      z-index: 1;
+    }
+    .modal-date {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .modal-close {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-close:hover {
+      border-color: var(--neon-magenta);
+      color: var(--neon-magenta);
+    }
+    .modal-body { padding: 14px 22px 20px; }
+    .modal-event {
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+    .modal-event:last-child { margin-bottom: 0; }
+    .modal-event-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal-event-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+    .meta-tag {
+      font-size: 0.68rem;
+      background: rgba(255,255,255,0.05);
+      border-radius: var(--radius-sm);
+      padding: 3px 9px;
+      color: var(--text-secondary);
+    }
+    .modal-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .ticket-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: var(--neon-magenta-dim);
+      color: var(--neon-magenta);
+      border: 1px solid rgba(255, 45, 120, 0.25);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .ticket-btn:hover {
+      border-color: var(--neon-magenta);
+      box-shadow: var(--glow-magenta);
+    }
+    .ticket-btn svg { width: 13px; height: 13px; fill: currentColor; }
+    .spotify-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: rgba(30, 215, 96, 0.1);
+      color: #1ed760;
+      border: 1px solid rgba(30, 215, 96, 0.2);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .spotify-btn:hover {
+      border-color: #1ed760;
+      box-shadow: 0 0 15px rgba(30, 215, 96, 0.2);
+    }
+    .spotify-btn svg { width: 13px; height: 13px; fill: currentColor; }
+
+    /* PAST EVENT DIMMING */
+    .cal-cell.past-day { opacity: 0.3; pointer-events: none; }
+    .cal-cell.past-day.has-events { pointer-events: auto; opacity: 0.3; }
+    .cal-cell.past-day:hover { opacity: 0.5; }
+    .list-event.past-event { opacity: 0.35; }
+    .list-event.past-event:hover { opacity: 0.55; }
+    .list-date-header.past-date { opacity: 0.4; }
+    .ma-table tr.past-row td { opacity: 0.35; }
+    .modal-event.past-event-modal { opacity: 0.4; position: relative; }
+    .modal-event.past-event-modal::after {
+      content: 'PAST';
+      position: absolute;
+      top: 8px; right: 12px;
+      font-family: var(--font-display);
+      font-size: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      background: rgba(255,255,255,0.05);
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .today-badge {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--neon-magenta);
+      background: var(--neon-magenta-dim);
+      padding: 1px 6px;
+      border-radius: 3px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    /* Hide past toggle */
+    .hide-past-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      cursor: pointer;
+      user-select: none;
+      font-family: var(--font-body);
+      white-space: nowrap;
+    }
+    .hide-past-toggle input[type="checkbox"] {
+      accent-color: var(--neon-cyan);
+      cursor: pointer;
+    }
+    .hide-past-toggle:hover { color: var(--text-secondary); }
+
+    /* Empty / utility */
+    .empty-month { text-align: center; padding: 60px 20px; color: var(--text-dim); font-size: 0.85rem; }
+    .empty-month .emoji { font-size: 2rem; display: block; margin-bottom: 10px; }
+
+    /* TABLET */
+    @media (max-width: 700px) {
+      header {
+        padding: 16px 16px 14px;
+        position: sticky; top: 0; z-index: 100;
+      }
+      h1 { font-size: 1.2rem; }
+      .header-year { font-size: 1.2rem; }
+      .subtitle { display: none; }
+      .filters-bar { padding: 10px 16px; }
+      .alert-strip { padding: 8px 16px; }
+      .view-tabs { padding: 0 16px; }
+      .month-nav { position: sticky; z-index: 99; background: var(--bg-deep); padding-top: 10px; padding-bottom: 4px; }
+      .month-dots { position: sticky; z-index: 98; background: var(--bg-deep); padding-bottom: 8px; }
+      .legend-wrap { position: sticky; z-index: 97; background: var(--bg-deep); padding-top: 4px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+      .calendar-wrap, .legend-wrap { padding-left: 8px; padding-right: 8px; }
+      .result-count { margin-left: 0; }
+      .cal-header-row { display: none; }
+      .cal-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: auto; gap: 6px; }
+      .cal-cell.empty { display: none; }
+      .cal-cell { padding: 10px 12px; min-height: 90px; border-radius: var(--radius-md); }
+      .day-num { font-size: 0.85rem; margin-bottom: 6px; }
+      .event-chip { font-size: 0.7rem; padding: 3px 7px; margin-bottom: 3px; white-space: normal; overflow: visible; text-overflow: unset; }
+      .day-label { display: inline; margin-right: 5px; }
+      .ma-input-row { flex-direction: column; }
+      .ma-add-btn { width: 100%; text-align: center; }
+      .ma-table th:nth-child(3), .ma-table td:nth-child(3) { display: none; }
+      .ma-table th:nth-child(4), .ma-table td:nth-child(4) { display: none; }
+    }
+    @media (max-width: 480px) {
+      .cal-grid { grid-template-columns: 1fr; gap: 6px; }
+      .cal-cell { padding: 12px 14px; min-height: auto; }
+      .day-num { font-size: 0.95rem; }
+      .event-chip { font-size: 0.75rem; padding: 4px 9px; }
+      .month-label { font-size: 1rem; min-width: 180px; }
+      .view-tab { padding: 10px 14px; font-size: 0.62rem; }
+    }
+
+    /* GOOGLE CALENDAR BUTTON */
+    .gcal-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: rgba(66, 133, 244, 0.1);
+      color: #4285f4;
+      border: 1px solid rgba(66, 133, 244, 0.2);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .gcal-btn:hover {
+      border-color: #4285f4;
+      box-shadow: 0 0 15px rgba(66, 133, 244, 0.2);
+    }
+    .gcal-btn svg { width: 13px; height: 13px; fill: currentColor; }
+
+    /* ON-SALE BADGES */
+    .sale-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.6rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .sale-badge.presale {
+      background: var(--neon-amber-dim);
+      color: var(--neon-amber);
+      border: 1px solid rgba(255, 215, 64, 0.2);
+    }
+    .sale-badge.onsale {
+      background: rgba(30, 215, 96, 0.1);
+      color: #1ed760;
+      border: 1px solid rgba(30, 215, 96, 0.2);
+    }
+    .sale-badge.onsale-soon {
+      background: var(--neon-magenta-dim);
+      color: var(--neon-magenta);
+      border: 1px solid rgba(255, 45, 120, 0.2);
+      animation: pulse-sale 2s ease-in-out infinite;
+    }
+    @keyframes pulse-sale {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .sale-countdown {
+      font-family: var(--font-body);
+      font-size: 0.62rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* LATIN GENRE */
+    .genre-latin {
+      background: rgba(255, 152, 0, 0.08);
+      border-left: 3px solid #ff9800;
+    }
+    .event-chip.genre-latin {
+      background: rgba(255, 152, 0, 0.12);
+      color: #ff9800;
+      border-color: rgba(255, 152, 0, 0.25);
+    }
+
+    /* VENDOR TAG */
+    .vendor-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.6rem;
+      font-family: var(--font-display);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 2px 8px;
+      border-radius: 3px;
+      background: rgba(100, 100, 180, 0.1);
+      color: #8888bb;
+      border: 1px solid rgba(100, 100, 180, 0.15);
+      white-space: nowrap;
+    }
+    .vendor-tag.ticketmaster { color: #0290d5; background: rgba(2, 144, 213, 0.08); border-color: rgba(2, 144, 213, 0.18); }
+    .vendor-tag.axs { color: #e44d26; background: rgba(228, 77, 38, 0.08); border-color: rgba(228, 77, 38, 0.18); }
+    .vendor-tag.bowl { color: #ffd740; background: var(--neon-amber-dim); border-color: rgba(255, 215, 64, 0.2); }
+
+    /* TICKET DROPS BANNER */
+    .drops-section {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      margin: 16px 20px;
+      display: none;
+      overflow: hidden;
+    }
+    .drops-section.has-drops { display: block; }
+    .drops-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+    .drops-header:hover { background: var(--bg-card); }
+    .drops-title {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--neon-magenta);
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .drops-title .count {
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+      margin-left: 8px;
+    }
+    .drops-header .next-drop-preview {
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+    }
+    .drops-header .next-drop-preview strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    .drops-chevron {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      transition: transform 0.25s ease;
+      margin-left: 12px;
+      flex-shrink: 0;
+    }
+    .drops-section.open .drops-chevron { transform: rotate(180deg); }
+    .drops-body-wrap {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .drops-section.open .drops-body-wrap {
+      max-height: 800px;
+    }
+    .drops-body-inner {
+      padding: 0 20px 16px;
+      border-top: 1px solid var(--border);
+    }
+    .drop-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .drop-card:last-child { border-bottom: none; }
+    .drop-date-col {
+      flex-shrink: 0;
+      text-align: center;
+      min-width: 54px;
+      padding: 6px 0;
+    }
+    .drop-date-col .day {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--neon-magenta);
+      line-height: 1;
+    }
+    .drop-date-col .month-label {
+      font-size: 0.55rem;
+      font-family: var(--font-display);
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+    .drop-date-col .time-label {
+      font-size: 0.62rem;
+      font-weight: 600;
+      color: var(--neon-amber);
+      margin-top: 2px;
+      font-family: var(--font-body);
+    }
+    .drop-info {
+      flex: 1;
+    }
+    .drop-artist {
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    .drop-meta {
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+    }
+    .drop-badges {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .drop-countdown {
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--neon-magenta);
+      letter-spacing: 0.04em;
+    }
+    .drop-countdown.imminent {
+      animation: pulse-sale 1.5s ease-in-out infinite;
+    }
+
+    /* LAST UPDATED */
+    .last-updated {
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+      margin-top: 2px;
+    }
+
+    /* PRICE TIER */
+    .price-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 0.6rem;
+      font-family: var(--font-display);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 2px 7px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .price-tag.tier-1 { color: #50e8aa; background: rgba(0, 230, 160, 0.08); border: 1px solid rgba(0, 230, 160, 0.15); }
+    .price-tag.tier-2 { color: #50d4ff; background: rgba(0, 180, 255, 0.08); border: 1px solid rgba(0, 180, 255, 0.15); }
+    .price-tag.tier-3 { color: var(--neon-amber); background: var(--neon-amber-dim); border: 1px solid rgba(255, 215, 64, 0.15); }
+    .price-tag.tier-4 { color: var(--neon-magenta); background: var(--neon-magenta-dim); border: 1px solid rgba(255, 45, 120, 0.15); }
+
+    /* SUPPORT ACT */
+    .support-tag {
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .list-event-support {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      font-style: italic;
+      flex-shrink: 0;
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .list-event-price {
+      font-size: 0.62rem;
+      font-family: var(--font-display);
+      font-weight: 600;
+      color: var(--text-dim);
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>LA Concerts</h1>
+    <span class="header-year">2026</span>
+  </div>
+  <div class="subtitle">Hollywood Bowl / Greek Theatre / Kia Forum / Crypto.com Arena / SoFi Stadium + more</div>
+  <div class="last-updated">Data refreshed: March 31, 2026 &bull; 399 shows across 19 venues</div>
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input type="text" class="search-input" id="artistSearch" placeholder="Search artists..." autocomplete="off">
+    <div class="search-dropdown" id="searchDropdown"></div>
+  </div>
+</header>
+
+<div class="alert-strip" id="watchlistBanner">
+  <span class="badge badge-magenta" id="wlCount">0</span>
+  <span>saved shows</span>
+  <span id="wlNextSale" style="font-size:0.68rem;color:var(--neon-cyan);"></span>
+  <button onclick="setView('myartists')">View Saved</button>
+</div>
+
+<div class="alert-strip artist-alert" id="artistAlertBanner" onclick="setView('myartists')">
+  <span class="badge badge-amber" id="artistAlertCount">0</span>
+  <span id="artistAlertText" style="font-size:0.68rem;color:var(--neon-amber);"></span>
+</div>
+
+<div class="drops-section" id="dropsSection">
+  <div class="drops-header" onclick="toggleDrops()">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <div class="drops-title">Upcoming Ticket Drops <span class="count" id="dropsCount"></span></div>
+      <span class="next-drop-preview" id="dropsPreview"></span>
+    </div>
+    <span class="drops-chevron">&#9660;</span>
+  </div>
+  <div class="drops-body-wrap">
+    <div class="drops-body-inner" id="dropsBody"></div>
+  </div>
+</div>
+
+<div class="filters-bar">
+  <div class="filter-row">
+    <span class="filter-label">Venue</span>
+    <div class="filter-chips" id="venueChips"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Genre</span>
+    <div class="filter-chips" id="genreChips"></div>
+    <label class="hide-past-toggle"><input type="checkbox" id="hidePastCheck" checked onchange="toggleHidePast()"> Hide past</label>
+    <div class="result-count" id="resultCount"><span>0</span> shows</div>
+  </div>
+</div>
+
+<div class="view-tabs">
+  <button class="view-tab active" id="calViewBtn" onclick="setView('calendar')">Calendar</button>
+  <button class="view-tab" id="listViewBtn" onclick="setView('list')">List</button>
+  <button class="view-tab" id="myartistsViewBtn" onclick="setView('myartists')">My Artists</button>
+</div>
+
+<div class="month-nav" id="monthNavWrap">
+  <button class="nav-btn" onclick="prevMonth()" title="Previous month">&#8249;</button>
+  <div class="month-label" id="monthLabel"></div>
+  <button class="nav-btn" onclick="nextMonth()" title="Next month">&#8250;</button>
+</div>
+<div class="month-dots" id="monthDots"></div>
+
+<div class="legend-wrap" id="legendWrap">
+  <div class="legend" id="legend"></div>
+</div>
+
+<div class="calendar-wrap" id="calendarWrap">
+  <div class="cal-header-row">
+    <div class="cal-header-day">Sun</div>
+    <div class="cal-header-day">Mon</div>
+    <div class="cal-header-day">Tue</div>
+    <div class="cal-header-day">Wed</div>
+    <div class="cal-header-day">Thu</div>
+    <div class="cal-header-day">Fri</div>
+    <div class="cal-header-day">Sat</div>
+  </div>
+  <div class="cal-grid" id="calGrid"></div>
+</div>
+
+<div class="list-wrap" id="listWrap"></div>
+<div class="my-artists-wrap" id="myArtistsWrap"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-date" id="modalDate"></div>
+      <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+// ── CONCERT DATA ──────────────────────────────
+const CONCERTS = [
+  // ── APRIL 2026 ──
+  { date: '2026-04-01', name: 'Aries', venue: 'The Fonda Theatre', genre: 'Pop', support: 'Tiffany Day', spotifyMonthlyListeners: 3400000, ticketUrl: 'https://www.ticketmaster.com/search?q=aries', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-01', name: 'Calum Scott - The Avenoir Tour 2026', venue: 'The Wiltern', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-01', name: 'Ricky Montgomery', venue: 'The Wiltern', genre: 'Indie/Folk', support: 'Bella Kay', spotifyMonthlyListeners: 5200000, ticketUrl: 'https://www.ticketmaster.com/search?q=ricky+montgomery', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-02', name: 'Dave', venue: 'Hollywood Palladium', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/dave-hollywood-california-04-03-2026/event/090063759A6A9FB5', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-02', name: 'Mitski', venue: 'Hollywood Bowl', genre: 'Indie/Folk', support: 'Haley Heynderickx', spotifyMonthlyListeners: 12000000, ticketUrl: 'https://www.hollywoodbowl.com/events/', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-02', name: 'Pity Party (Girls Club) w/Special Guest: Buddha Trixie', venue: 'The Regent Theater', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-02', name: 'Quarters', venue: 'The Regent Theater', genre: 'Indie/Folk', support: 'Charlie Brown', spotifyMonthlyListeners: 363990, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-02', name: 'Slaughter To Prevail', venue: 'Hollywood Palladium', genre: 'Rock', support: 'Whitechapel, Attila', spotifyMonthlyListeners: 4200000, ticketUrl: 'https://www.ticketmaster.com/search?q=slaughter+to+prevail', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-03', name: 'Calum Scott', venue: 'The Wiltern', genre: 'Pop', support: '', spotifyMonthlyListeners: 15000000, ticketUrl: 'https://www.ticketmaster.com/search?q=calum+scott', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-03', name: 'Dave', venue: 'Hollywood Palladium', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 34200000, ticketUrl: 'https://www.ticketmaster.com/dave-hollywood-california-04-03-2026/event/090063759A6A9FB5', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-03', name: 'Gene Farris', venue: 'Academy LA', genre: 'Electronic/EDM', support: 'OFFAIAH, Wenzday', spotifyMonthlyListeners: 200000, ticketUrl: 'https://academy.la/', ticketVendor: 'Academy LA Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-03', name: 'Hail the Sun', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-03', name: 'Ruel - Kicking My Feet Tour', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-03', name: 'The Thing', venue: 'Troubadour', genre: 'Rock', support: 'The Macks', spotifyMonthlyListeners: 50000, ticketUrl: 'https://troubadour.com/calendar/', ticketVendor: 'Troubadour Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-04', name: 'Dark Tranquillity & Soen', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-04', name: 'Elise Trouw', venue: 'Troubadour', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 300000, ticketUrl: 'https://troubadour.com/calendar/', ticketVendor: 'Troubadour Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-04', name: 'Hail the Sun', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 420000, ticketUrl: 'https://www.ticketmaster.com/search?q=hail+the+sun', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-04', name: 'Verka Serduchka', venue: 'The Wiltern', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-04', name: 'What So Not', venue: 'Academy LA', genre: 'Electronic/EDM', support: '', spotifyMonthlyListeners: 1500000, ticketUrl: 'https://academy.la/', ticketVendor: 'Academy LA Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-05', name: 'Chrissy Chlapecka', venue: 'The Roxy Theatre', genre: 'Pop', support: '', spotifyMonthlyListeners: 800000, ticketUrl: 'https://www.songkick.com/venues/1300-roxy-theatre', ticketVendor: 'Songkick', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-05', name: 'Maddox Batson: Live Worldwide Tour', venue: 'The Wiltern', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-05', name: 'Verka Serduchka', venue: 'The Wiltern', genre: 'Pop', support: '', spotifyMonthlyListeners: 2100000, ticketUrl: 'https://www.ticketmaster.com/search?q=verka+serduchka', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-07', name: 'BRUCE SPRINGSTEEN AND THE E STREET BAND', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/springsteen-e-street-land-of-hope-inglewood-california-04-07-2026/event/09006450E162DF0A', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-07', name: 'Bruce Springsteen & E Street Band', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 22000000, ticketUrl: 'https://www.ticketmaster.com/search?q=bruce+springsteen', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-07', name: 'Orbit Culture - Death Above Life North American Tour', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-08', name: 'Caroline Jones', venue: 'Troubadour', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 200000, ticketUrl: 'https://troubadour.com/calendar/', ticketVendor: 'Troubadour Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-08', name: 'Humbe', venue: 'The Wiltern', genre: 'Latin', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-08', name: 'Maddox Batson', venue: 'The Wiltern', genre: 'Pop', support: '', spotifyMonthlyListeners: 1500000, ticketUrl: 'https://www.ticketmaster.com/search?q=maddox+batson', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-08', name: 'Ruel', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 3500000, ticketUrl: 'https://www.ticketmaster.com/search?q=ruel', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-08', name: 'Sticky Fingers', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-09', name: 'Akaash Singh: Generational Triumph Tour', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-09', name: 'BRUCE SPRINGSTEEN AND THE E STREET BAND', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/springsteen-e-street-land-of-hope-inglewood-california-04-09-2026/event/09006450E170DF21', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-09', name: 'NMIXX', venue: 'YouTube Theater', genre: 'Pop', support: '', spotifyMonthlyListeners: 4200000, ticketUrl: 'https://www.ticketmaster.com/search?q=nmixx', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-09', name: 'Sticky Fingers', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 1200000, ticketUrl: 'https://www.ticketmaster.com/search?q=sticky+fingers', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-09', name: 'The Moss', venue: 'Troubadour', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 150000, ticketUrl: 'https://troubadour.com/calendar/', ticketVendor: 'Troubadour Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-10', name: 'Bassrush Presents SVDDEN DEATH', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-10', name: 'Bruno Mars', venue: 'Crypto.com Arena', genre: 'Pop', support: '', spotifyMonthlyListeners: 75000000, ticketUrl: 'https://www.ticketmaster.com/search?q=bruno+mars', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-10', name: 'Humbe', venue: 'The Wiltern', genre: 'Latin', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-10', name: 'Jon McLaughlin', venue: 'Troubadour', genre: 'Pop', support: '', spotifyMonthlyListeners: 800000, ticketUrl: 'https://troubadour.com/calendar/', ticketVendor: 'Troubadour Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-10', name: 'Kanine', venue: 'Academy LA', genre: 'Electronic/EDM', support: '', spotifyMonthlyListeners: 50000, ticketUrl: 'https://academy.la/', ticketVendor: 'Academy LA Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-10', name: 'REIK', venue: 'Kia Forum', genre: 'Latin', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/reik-tour-2026-inglewood-california-04-10-2026/event/0900637AB3FE942B', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-10', name: 'The Bolshoi Brothers & Theatre Of Hate w/Some Days Are Darker', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-11', name: 'Amplified Alpine Presents Emperor: The Emperial Wrath Tour', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-11', name: 'Artists for Aid', venue: 'Shrine Auditorium', genre: 'Pop', support: 'Daniel Caesar, Clairo, Omar Apollo, Faye Webster', spotifyMonthlyListeners: 65000000, ticketUrl: 'https://www.axs.com/events/1255454/artists-for-aid-tickets', ticketVendor: 'AXS', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-11', name: 'Bassjackers', venue: 'Academy LA', genre: 'Electronic/EDM', support: '', spotifyMonthlyListeners: 2600000, ticketUrl: 'https://academy.la/', ticketVendor: 'Academy LA Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-11', name: 'Cass McCombs', venue: 'Troubadour', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 400000, ticketUrl: 'https://troubadour.com/calendar/', ticketVendor: 'Troubadour Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-11', name: 'City Pop Waves: Masayoshi Takanaka SUPER TAKANAKA WORLD LIVE 2026', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-12', name: 'City Pop Waves: Masayoshi Takanaka SUPER TAKANAKA WORLD LIVE 2026', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-12', name: 'Dar Williams', venue: 'Troubadour', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 300000, ticketUrl: 'https://troubadour.com/calendar/', ticketVendor: 'Troubadour Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-13', name: 'Afroman', venue: 'The Regent Theater', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-13', name: 'Bilmuri - Kinda Hard Tour', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-14', name: 'Twice', venue: 'Crypto.com Arena', genre: 'Pop', support: '', spotifyMonthlyListeners: 16613889, ticketUrl: 'https://www.ticketmaster.com/search?q=twice', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-15', name: 'Afroman', venue: 'The Regent Theater', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 3200000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-17', name: 'Dr. Mary Claire Haver Live', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-17', name: 'Sublime', venue: 'Greek Theatre', genre: 'Rock', support: 'Common Kings, Bumpin Uglies', spotifyMonthlyListeners: 13676366, ticketUrl: 'https://www.ticketmaster.com/search?q=sublime', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-18', name: 'Bleed From Within - The Zenith Tour', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-18', name: 'She Wants Revenge', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-18', name: 'The Summer Set', venue: 'El Rey Theatre', genre: 'Rock', support: '', spotifyMonthlyListeners: 500000, ticketUrl: 'https://www.bandsintown.com/e/1037031258', ticketVendor: 'Bandsintown', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-20', name: 'Bring Me The Horizon', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-20', name: 'Langhorne Slim', venue: 'Troubadour', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 300000, ticketUrl: 'https://troubadour.com/calendar/', ticketVendor: 'Troubadour Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-21', name: 'ELECTRIC CALLBOY', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/electric-callboy-tanzneid-world-tour-inglewood-california-04-21-2026/event/09006350C0348591', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-21', name: 'Maya Hawke', venue: 'El Rey Theatre', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 767427, ticketUrl: 'https://www.ticketmaster.com/search?q=maya+hawke', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-22', name: 'Thee Sacred Souls', venue: 'Greek Theatre', genre: 'Indie/Folk', support: 'Roge', spotifyMonthlyListeners: 3600000, ticketUrl: 'https://www.ticketmaster.com/search?q=thee+sacred+souls', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-23', name: 'Alice Phoebe Lou: Oblivion Tour', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-23', name: 'Ari Lennox', venue: 'YouTube Theater', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 2821188, ticketUrl: 'https://www.ticketmaster.com/search?q=ari+lennox', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-23', name: 'Insomniac Presents - Electrik Seoul: K-POP X EDM', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-24', name: 'Alice Phoebe Lou', venue: 'The Wiltern', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 3800000, ticketUrl: 'https://www.ticketmaster.com/search?q=alice+phoebe+lou', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-24', name: 'Electrik Seoul', venue: 'Hollywood Palladium', genre: 'Electronic/EDM', support: '', spotifyMonthlyListeners: 500000, ticketUrl: 'https://www.ticketmaster.com/search?q=electrik+seoul', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-24', name: 'Gothicumbia', venue: 'The Regent Theater', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-24', name: 'KCRW Presents Cory Wong - Lost in the Wonder', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-24', name: 'NGHTMRE Presents: MINDFULL', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-24', name: 'Rommii', venue: 'Academy LA', genre: 'Electronic/EDM', support: '', spotifyMonthlyListeners: 20000, ticketUrl: 'https://academy.la/', ticketVendor: 'Academy LA Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-24', name: 'THIRD DAY', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/third-day-30th-anniversary-tour-with-inglewood-california-04-24-2026/event/090062CDA4E52993', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-25', name: 'Bethel Music 2026 Tour', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-25', name: 'Cory Wong', venue: 'The Wiltern', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 675000, ticketUrl: 'https://www.ticketmaster.com/search?q=cory+wong', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-25', name: 'Getdown Services', venue: 'The Roxy Theatre', genre: 'Rock', support: '', spotifyMonthlyListeners: 100000, ticketUrl: 'https://www.theroxy.com/events', ticketVendor: 'The Roxy Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-25', name: 'HEALTH x CARPENTER BRUT', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-25', name: 'HVOB presents The Silver Cage - U.S. 2026', venue: 'The Regent Theater', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-25', name: 'NGHTMRE', venue: 'Hollywood Palladium', genre: 'Electronic/EDM', support: '', spotifyMonthlyListeners: 1200000, ticketUrl: 'https://www.ticketmaster.com/search?q=nghtmre', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-25', name: 'Neil Forever', venue: 'Greek Theatre', genre: 'Rock', support: '', spotifyMonthlyListeners: 1200000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-26', name: 'Be Like Blippi Tour!', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-27', name: 'Oh Wonder', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-28', name: 'Gabrielle Bernstein: Time to Trust', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-28', name: 'Oh Wonder', venue: 'The Wiltern', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 5400000, ticketUrl: 'https://www.ticketmaster.com/search?q=oh+wonder', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-29', name: 'CHARLIE PUTH', venue: 'Kia Forum', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/charlie-puth-whatevers-clever-world-tour-inglewood-california-04-29-2026/event/09006428C3AEA422', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-29', name: 'Lewis Capaldi', venue: 'Greek Theatre', genre: 'Pop', support: 'Joy Crookes', spotifyMonthlyListeners: 26196481, ticketUrl: 'https://www.ticketmaster.com/search?q=lewis+capaldi', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-29', name: 'Snail Mail', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-04-30', name: 'Chet Faker', venue: 'The Novo', genre: 'Electronic/EDM', support: '', spotifyMonthlyListeners: 3100000, ticketUrl: 'https://www.thenovodtla.com/events', ticketVendor: 'The Novo Box Office', onSaleDate: '', presaleDate: '' },
+  // ── MAY 2026 ──
+  { date: '2026-05-01', name: 'Emo Orchestra', venue: 'The Novo', genre: 'Rock', support: 'The Spill Canvas', spotifyMonthlyListeners: 50000, ticketUrl: 'https://www.thenovodtla.com/events', ticketVendor: 'The Novo Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-01', name: 'HEALTH x CARPENTER BRUT', venue: 'Hollywood Palladium', genre: 'Electronic/EDM', support: '', spotifyMonthlyListeners: 450000, ticketUrl: 'https://www.ticketmaster.com/search?q=health+carpenter+brut', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-01', name: 'Moonchild: Waves Tour', venue: 'The Wiltern', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-01', name: 'Snail Mail', venue: 'The Wiltern', genre: 'Indie/Folk', support: 'Sharp Pins', spotifyMonthlyListeners: 649827, ticketUrl: 'https://www.ticketmaster.com/search?q=snail+mail', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-01', name: 'The Slackers w/Special Guests: Very Be Careful, Eureka Sound', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-02', name: 'Le Youth', venue: 'The Novo', genre: 'Electronic/EDM', support: '', spotifyMonthlyListeners: 500000, ticketUrl: 'https://www.thenovodtla.com/events', ticketVendor: 'The Novo Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-02', name: 'Lewis Capaldi', venue: 'Greek Theatre', genre: 'Pop', support: 'Joy Crookes', spotifyMonthlyListeners: 26196481, ticketUrl: 'https://www.ticketmaster.com/search?q=lewis+capaldi', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-02', name: 'Lewis Capaldi Joy Crookes', venue: 'Hollywood Bowl', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4242/2026-05-02/lewis-capaldi', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-02', name: 'RENÉ LIU', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/rene-liu-inglewood-california-05-02-2026/event/0900646DEB1617A5', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-02', name: 'Rita\'s Lucha VaVOOM', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-02', name: 'Starjunk 95', venue: 'The Fonda Theatre', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 826117, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-02', name: 'The Music of Square Enix', venue: 'Shrine Auditorium', genre: 'Electronic/EDM', support: 'Hollywood Cinematic Orchestra', spotifyMonthlyListeners: 2000000, ticketUrl: 'https://www.musicofsquareenix.com/concert/los-angeles-2026', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-03', name: 'Baby Keem', venue: 'Shrine Auditorium', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 4500000, ticketUrl: 'https://www.ticketmaster.com/search?q=baby+keem', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-03', name: 'Good Kid', venue: 'The Novo', genre: 'Indie/Folk', support: 'INOHA', spotifyMonthlyListeners: 200000, ticketUrl: 'https://www.thenovodtla.com/events', ticketVendor: 'The Novo Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-04', name: 'Baby Keem', venue: 'Shrine Auditorium', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 4500000, ticketUrl: 'https://www.ticketmaster.com/search?q=baby+keem', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-06', name: 'James K', venue: 'El Rey Theatre', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 200000, ticketUrl: 'https://concerts.consequence.net/events/james-k-at-el-rey-theatre-los-angeles-on-2026-05-06-20-00', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-06', name: 'The Midnight: Time Machines', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-07', name: 'Flight of the Conchords', venue: 'Greek Theatre', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 1200000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-08', name: 'Bruce Springsteen & E Street Band', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 22000000, ticketUrl: 'https://www.ticketmaster.com/search?q=bruce+springsteen', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-08', name: 'MUNA', venue: 'Shrine Auditorium', genre: 'Pop', support: '', spotifyMonthlyListeners: 1500000, ticketUrl: 'https://www.ticketmaster.com/search?q=muna', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-08', name: 'Snow Tha Product', venue: 'The Novo', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 2200000, ticketUrl: 'https://www.thenovodtla.com/events', ticketVendor: 'The Novo Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-09', name: 'Dumpstaphunk: Dumpsta Plays Sly', venue: 'The Regent Theater', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-09', name: 'Flight of the Conchords', venue: 'Greek Theatre', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 1200000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-09', name: 'Good Dye Young Presents: Hayley Williams At A Bachelorette Party', venue: 'The Wiltern', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-09', name: 'MUNA', venue: 'Shrine Auditorium', genre: 'Pop', support: '', spotifyMonthlyListeners: 1500000, ticketUrl: 'https://www.ticketmaster.com/search?q=muna', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-10', name: 'Leftover Crack w/Special Guests: Spaceman Bob, Human Issue, Union 13', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-11', name: 'Jose Gonzalez', venue: 'The Wiltern', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 5221390, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-12', name: 'Good Dye Young Presents: Hayley Williams At A Bachelorette Party', venue: 'The Wiltern', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-13', name: 'Good Dye Young Presents: Hayley Williams At A Bachelorette Party', venue: 'The Wiltern', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-13', name: 'The Prodigy', venue: 'The Novo', genre: 'Electronic/EDM', support: 'Nitepunk', spotifyMonthlyListeners: 5000000, ticketUrl: 'https://www.thenovodtla.com/events', ticketVendor: 'The Novo Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-14', name: 'Autumn Kings', venue: 'The Roxy Theatre', genre: 'Rock', support: 'Stray View', spotifyMonthlyListeners: 150000, ticketUrl: 'https://www.theroxy.com/events', ticketVendor: 'The Roxy Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-14', name: 'LORDE', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/lorde-ultrasound-inglewood-california-05-14-2026/event/09006355F61475DE', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-14', name: 'The Prodigy', venue: 'The Novo', genre: 'Electronic/EDM', support: 'Nitepunk', spotifyMonthlyListeners: 5000000, ticketUrl: 'https://www.thenovodtla.com/events', ticketVendor: 'The Novo Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-15', name: 'Floetry', venue: 'The Novo', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 1500000, ticketUrl: 'https://www.thenovodtla.com/events', ticketVendor: 'The Novo Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-15', name: 'LORDE', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/lorde-ultrasound-inglewood-california-05-15-2026/event/09006357E4B27981?referrer=https%3A%2F%2Fwww.ticketmaster.com%2Florde-tickets%2Fartist%2F1901987', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-15', name: 'Lupe Fiasco - Food & Liquor 20th Anniversary Tour', venue: 'The Wiltern', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-15', name: 'Touché Amoré: Stage Four 10 Year Anniversary', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-16', name: 'Behemoth: The Godless IV 2026', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-16', name: 'City Pop Waves: ANRI LIVE 2026 U.S.A Timely!!', venue: 'The Wiltern', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-16', name: 'DEMI LOVATO', venue: 'Kia Forum', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/demi-lovato-its-not-that-deep-inglewood-california-05-16-2026/event/09006358CD906D06', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-16', name: 'Just Mustard', venue: 'Troubadour', genre: 'Rock', support: '', spotifyMonthlyListeners: 100000, ticketUrl: 'https://troubadour.com/calendar/', ticketVendor: 'Troubadour Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-16', name: 'Lupe Fiasco', venue: 'The Wiltern', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 3500000, ticketUrl: 'https://www.ticketmaster.com/search?q=lupe+fiasco', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-16', name: 'Vana', venue: 'The Roxy Theatre', genre: 'Rock', support: 'cloudyfield, RedHook', spotifyMonthlyListeners: 50000, ticketUrl: 'https://www.theroxy.com/events', ticketVendor: 'The Roxy Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-19', name: 'FLORENCE + THE MACHINE', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/event/09006356E55275D5', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-20', name: 'City Pop Waves: ANRI LIVE 2026 U.S.A Timely!!', venue: 'The Wiltern', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-20', name: 'FLORENCE + THE MACHINE', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/event/09006356E55B75E3', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-20', name: 'Wild Nothing w/Special Guest: Lunar Vacation', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-21', name: 'Behemoth', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 2500000, ticketUrl: 'https://www.ticketmaster.com/search?q=behemoth', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-21', name: 'Dethklok', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-21', name: 'Kevin Morby', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-21', name: 'The Casualties: Detonate Tour LA', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-22', name: 'American Football', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-22', name: 'Dethklok', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 1500000, ticketUrl: 'https://www.ticketmaster.com/search?q=dethklok', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-22', name: 'Insomniac Presents: KSHMR', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-22', name: 'Kevin Morby', venue: 'The Wiltern', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 838298, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-22', name: 'Major Accident', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-23', name: 'Bright Eyes', venue: 'Greek Theatre', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 1145764, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-23', name: 'Bright Eyes – 21 Years of Wide Awake & Digital Ash The Moldy Peaches', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4272/2026-05-23/bright-eyes-21-years-of-wide-awake-digital-ash', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-23', name: 'Nettspend', venue: 'Hollywood Palladium', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-23', name: 'Other Voices Events Presents: blood club', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-23', name: 'The Paper Kites - If You Go There, I Hope You Find It', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-24', name: 'KESHA', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/kesha-the-freedom-tour-inglewood-california-05-24-2026/event/09006472C6B1AB9B', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-26', name: 'Sepultura - Celebrating Life Through Death Final North American Tour', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-29', name: 'CHAOS & CARNAGE 2026', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-29', name: 'Inner Wave & Los Mesoneros', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-29', name: 'Slide Away 2026', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-30', name: '3BallMTY', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-30', name: 'Elmiene - Sounds for Someone Tour', venue: 'The Wiltern', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-30', name: 'Hilary Duff', venue: 'Kia Forum', genre: 'Pop', support: 'La Roux, Jade LeMac', spotifyMonthlyListeners: 4267277, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-30', name: 'INNER WAVE & LOS MESONEROS', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-30', name: 'Ozomatli', venue: 'Greek Theatre', genre: 'Rock', support: '', spotifyMonthlyListeners: 250000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-30', name: 'Pitbull', venue: 'Crypto.com Arena', genre: 'Pop', support: 'Lil Jon', spotifyMonthlyListeners: 28000000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-30', name: 'Pitbull Lil Jon', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4278/2026-05-30/pitbull', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-31', name: 'Elmiene - Sounds for Someone Tour', venue: 'The Wiltern', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-05-31', name: 'Lue Elizondo - Persona Non Grata Tour', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  // ── JUNE 2026 ──
+  { date: '2026-06-02', name: 'Elmiene', venue: 'The Wiltern', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 2800000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-02', name: 'The HU and Apocalyptica', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-03', name: 'Qveen Herby - Isle of Qveen Tour', venue: 'Hollywood Palladium', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-04', name: 'The Human League', venue: 'Hollywood Bowl', genre: 'Electronic/EDM', support: 'Soft Cell, Alison Moyet', spotifyMonthlyListeners: 6200000, ticketUrl: 'https://www.hollywoodbowl.com/events/', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-04', name: 'Tigers Jaw', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-05', name: 'BELLE & SEBASTIAN: IF YOU\'RE FEELING SINISTER + CLASSIC SONGS', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-05', name: 'BELLE & SEBASTIAN: TIGERMILK + CLASSIC SONGS', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-05', name: 'Belle & Sebastian', venue: 'Hollywood Palladium', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 2400000, ticketUrl: 'https://www.ticketmaster.com/search?q=belle+and+sebastian', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-06', name: '37th Mariachi USA', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4274/2026-06-06/37th-mariachi-usa-with-fireworks', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-06', name: 'Belle & Sebastian', venue: 'Hollywood Palladium', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 2400000, ticketUrl: 'https://www.ticketmaster.com/search?q=belle+and+sebastian', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-06', name: 'Earl Sweatshirt & MIKE Home on the Range Tour 2026', venue: 'Hollywood Palladium', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-06', name: 'Orchestra Noir', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-06', name: 'The Kid LAROI', venue: 'Greek Theatre', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 28000000, ticketUrl: 'https://www.ticketmaster.com/search?q=the+kid+laroi', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-07', name: 'Flawed Mangoes: The Killswitch Memories Tour', venue: 'The Regent Theater', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-07', name: 'Paul Simon', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 7841038, ticketUrl: 'https://www.hollywoodbowl.com/events/', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-07', name: 'Rush', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 18259161, ticketUrl: 'https://www.ticketmaster.com/search?q=rush', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-09', name: 'KCRW Presents Heavenly', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-09', name: 'Rush', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 18259161, ticketUrl: 'https://www.ticketmaster.com/search?q=rush', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-10', name: 'Earl Sweatshirt', venue: 'Hollywood Palladium', genre: 'Hip-Hop/R&B', support: 'MIKE', spotifyMonthlyListeners: 3000000, ticketUrl: 'https://www.ticketmaster.com/search?q=earl+sweatshirt', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-10', name: 'Rod Stewart', venue: 'Hollywood Bowl', genre: 'Rock', support: 'Richard Marx', spotifyMonthlyListeners: 13205343, ticketUrl: 'https://www.hollywoodbowl.com/events/', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-10', name: 'Rod Stewart Richard Marx', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4258/2026-06-10/rod-stewart', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-10', name: 'Said the Sky', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-11', name: 'RUSH', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/event/09006344C1F56B40', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-12', name: 'James Blake', venue: 'Greek Theatre', genre: 'Electronic/EDM', support: '', spotifyMonthlyListeners: 5600000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-13', name: 'Ariana Grande', venue: 'Crypto.com Arena', genre: 'Pop', support: '', spotifyMonthlyListeners: 78000000, ticketUrl: 'https://www.ticketmaster.com/search?q=ariana+grande', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-13', name: 'Blue Note Jazz Festival Day One: Saturday', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4273/2026-06-13/blue-note-jazz-festival', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-13', name: 'HONNE - 10 YEAR ANNIVERSARY TOUR', venue: 'The Wiltern', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-13', name: 'Killswitch Engage', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-13', name: 'RUSH', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/event/09006344C2346B4E', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-14', name: 'Ariana Grande', venue: 'Crypto.com Arena', genre: 'Pop', support: '', spotifyMonthlyListeners: 78000000, ticketUrl: 'https://www.ticketmaster.com/search?q=ariana+grande', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-14', name: 'Blue Note Jazz Festival Day Two: Sunday', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4291/2026-06-14/blue-note-jazz-festival', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-17', name: 'Alex Isley - When The City Sleeps', venue: 'The Wiltern', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-17', name: 'Ariana Grande', venue: 'Kia Forum', genre: 'Pop', support: '', spotifyMonthlyListeners: 78000000, ticketUrl: 'https://www.ticketmaster.com/ariana-grande-the-eternal-sunshine-tour-inglewood-california-06-17-2026/event/09006319299F5DEB', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-17', name: 'HONNE', venue: 'The Wiltern', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 5100000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-19', name: 'ARIANA GRANDE', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/ariana-grande-the-eternal-sunshine-tour-inglewood-california-06-19-2026/event/090063192F945F68?referrer=https%3A%2F%2Fwww.ticketmaster.com%2Fariana-grande-tickets%2Fartist%2F1688071', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-19', name: 'Chance the Rapper', venue: 'Hollywood Bowl', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 18000000, ticketUrl: 'https://www.hollywoodbowl.com/events/', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-19', name: 'Juneteenth', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4292/2026-06-19/juneteenth-with-chance-the-rapper', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-20', name: 'ARIANA GRANDE', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/ariana-grande-the-eternal-sunshine-tour-inglewood-california-06-20-2026/event/09006325C6486B2E?referrer=https%3A%2F%2Fwww.ticketmaster.com%2Fariana-grande-tickets%2Fartist%2F1688071', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-20', name: 'Alex Isley', venue: 'The Wiltern', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 1200000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-20', name: 'Audrey Hobert: The Staircase To Stardom Tour', venue: 'The Wiltern', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-20', name: 'Opening Night at the Bowl: The Best of Broadway', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4247/2026-06-20/opening-night-at-the-bowl-the-best-of-broadway', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-22', name: 'Monolord', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-23', name: 'Audrey Hobert', venue: 'The Wiltern', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 1436586, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-23', name: 'Membership', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-23', name: 'Our Sponsors', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-23', name: 'Plan Your Visit', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-23', name: 'Premier Parking & Club Access', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-23', name: 'Private Events', venue: 'The Wiltern', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-24', name: 'MADISON BEER', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/madison-beer-the-locket-tour-inglewood-california-06-24-2026/event/0900642CD700AE13', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '2026-06-21T10:00' },
+  { date: '2026-06-25', name: 'DILLSTRADAMUS (Dillon Francis B2B Flosstradamus)', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-25', name: 'Kesha', venue: 'Greek Theatre', genre: 'Pop', support: 'Chromeo', spotifyMonthlyListeners: 43244150, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-26', name: 'PALOMAZO NORTEÑO', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/palomazo-norteno-clase-maestra-tour-inglewood-california-06-26-2026/event/09006467102D8527', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-27', name: 'A Roots Picnic Experience A Great Night in Hip-Hop', venue: 'Hollywood Bowl', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4248/2026-06-27/a-roots-picnic-experience', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-27', name: 'A$AP ROCKY', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/aap-rocky-dont-be-dumb-world-inglewood-california-06-27-2026/event/0900642ED2E3168A', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-27', name: 'Corrosion of Conformity w/Special Guest: Whores, Crobot', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-27', name: 'Get Your Tickets', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4248/2026-06-27/a-roots-picnic-experience', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-27', name: 'Shrek Rave', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-06-29', name: 'ROSALÍA', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/rosalia-lux-tour-2026-inglewood-california-06-29-2026/event/0900636ED03255F4', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  // ── JULY 2026 ──
+  { date: '2026-07-01', name: 'ROSALÍA', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/rosalia-lux-tour-2026-inglewood-california-07-01-2026/event/0900638500FF6ACE', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-02', name: 'Beach Boys', venue: 'Hollywood Bowl', genre: 'Rock', support: 'Hollywood Bowl Orchestra', spotifyMonthlyListeners: 15000000, ticketUrl: 'https://www.hollywoodbowl.com/events/', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-04', name: 'Beach Boys', venue: 'Hollywood Bowl', genre: 'Rock', support: 'Fireworks Spectacular', spotifyMonthlyListeners: 15000000, ticketUrl: 'https://www.hollywoodbowl.com/events/', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-04', name: 'Ed Sheeran', venue: 'SoFi Stadium', genre: 'Pop', support: '', spotifyMonthlyListeners: 83109614, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-05', name: 'Herb Alpert & The Tijuana Brass & Other Delights', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4294/2026-07-05/herb-alpert-the-tijuana-brass-other-delights', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-08', name: 'HILARY DUFF', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/hilary-duff-the-lucky-me-tour-inglewood-california-07-08-2026/event/09006445FAA5CE7E', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-08', name: 'Wilkins Conducts Bernstein & Ellington', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4295/2026-07-08/wilkins-conducts-bernstein-ellington', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-09', name: 'HILARY DUFF', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/hilary-duff-the-lucky-me-tour-inglewood-california-07-09-2026/event/0900645088B65191', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-09', name: 'The Classical World Cup', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4296/2026-07-09/the-classical-world-cup', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-10', name: 'Music from the Films of Wes Anderson', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4288/2026-07-10/music-from-the-films-of-wes-anderson', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-11', name: '5 SECONDS OF SUMMER', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/5-seconds-of-summer-everyones-a-inglewood-california-07-11-2026/event/09006356D0AF6C86', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-11', name: 'DCI: Drum Corps International', venue: 'Rose Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/dci-drum-corps-international-pasadena-california-07-11-2026/event/0B0064682C096C6C', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-11', name: 'Ladies & Tangents: Girls Gone Mild Tour', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-11', name: 'Music from the Films of Wes Anderson', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4289/2026-07-11/music-from-the-films-of-wes-anderson', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-12', name: 'Music from the Films of Wes Anderson _KCRW Festival_', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4534/2026-07-12/music-from-the-films-of-wes-anderson', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-14', name: 'Tchaikovsky & Beethoven', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4297/2026-07-14/tchaikovsky-beethoven', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-15', name: 'Salsa Spectacular: Nathy Peluso & Grupo Niche', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4298/2026-07-15/salsa-spectacular-nathy-peluso-grupo-niche', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-16', name: 'Cormega "The Realness" 25th Anniversary', venue: 'The Regent Theater', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-16', name: 'Mozart & Brahms', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4299/2026-07-16/mozart-brahms', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-17', name: 'Let the Sunshine In: The Music of ’69', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4300/2026-07-17/let-the-sunshine-in-the-music-of-69', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-17', name: 'Poppy - Constantly Nowhere Tour', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-17', name: 'YOUNG THE GIANT', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/young-the-giant-victory-garden-tour-inglewood-california-07-17-2026/event/0900644FD813B474', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-18', name: 'Blues Traveler • Gin Blossoms Spin Doctors', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4301/2026-07-18/blues-traveler-gin-blossoms', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-18', name: 'EVANESCENCE', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/evanescence-2026-world-tour-with-spiritbox-inglewood-california-07-18-2026/event/090063790233D8DB', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-20', name: 'Joji', venue: 'Crypto.com Arena', genre: 'Pop', support: '', spotifyMonthlyListeners: 27171840, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-21', name: 'Joe Hisaishi Film Music Concert Featuring Studio Ghibli & More', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4303/2026-07-21/joe-hisaishi-film-music-concert', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-22', name: 'Joe Hisaishi Film Music Concert Featuring Studio Ghibli & More', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4304/2026-07-22/joe-hisaishi-film-music-concert', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-23', name: 'Joe Hisaishi Film Music Concert Featuring Studio Ghibli & More', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4305/2026-07-23/joe-hisaishi-film-music-concert', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-24', name: 'Cannibal Ox "The Cold Vein" 25 Year Anniversary', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-24', name: 'Smokey Robinson & Gladys Knight', venue: 'Hollywood Bowl', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 5200000, ticketUrl: 'https://www.hollywoodbowl.com/events/', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-24', name: 'Smokey Robinson & Gladys Knight: Just the Two of Us', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4259/2026-07-24/smokey-robinson-gladys-knight-just-the-two-of-us', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-25', name: 'Olivia Dean', venue: 'Greek Theatre', genre: 'Pop', support: '', spotifyMonthlyListeners: 62033596, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-25', name: 'Smokey Robinson & Gladys Knight', venue: 'Hollywood Bowl', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 5200000, ticketUrl: 'https://www.hollywoodbowl.com/events/', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-25', name: 'Smokey Robinson & Gladys Knight: Just the Two of Us', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4260/2026-07-25/smokey-robinson-gladys-knight-just-the-two-of-us', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-26', name: 'Boris Brejcha', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4308/2026-07-26/boris-brejcha-with-the-hollywood-bowl-orchestra', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-28', name: '_Rhapsody in Blue_ & Shostakovich', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4309/2026-07-28/rhapsody-in-blue-shostakovich', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-29', name: 'Tower of Power and Preservation Hall Jazz Band', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4310/2026-07-29/tower-of-power-and-preservation-hall-jazz-band', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-30', name: '_Pictures at an Exhibition_', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4311/2026-07-30/pictures-at-an-exhibition', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-31', name: 'MOTIONLESS IN WHITE', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/motionless-in-white-the-sweat-and-inglewood-california-07-31-2026/event/0900643C03501EC8', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-31', name: 'Tchaikovsky Spectacular', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4312/2026-07-31/tchaikovsky-spectacular-with-fireworks', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-07-31', name: 'of Montreal', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  // ── AUGUST 2026 ──
+  { date: '2026-08-01', name: 'IVE', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/ive-world-tour-show-what-i-inglewood-california-08-01-2026/event/0900645BD06027FE', ticketVendor: 'Ticketmaster', onSaleDate: '2026-04-02T15:00', presaleDate: '2026-04-02T15:00' },
+  { date: '2026-08-01', name: 'JOHN SCOFIELD\'S "ELECTROSPECTIVE"', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-01', name: 'Tchaikovsky Spectacular', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4313/2026-08-01/tchaikovsky-spectacular-with-fireworks', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-04', name: 'Mendelssohn & Haydn', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4315/2026-08-04/mendelssohn-haydn', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-05', name: 'ZZ Top', venue: 'Greek Theatre', genre: 'Rock', support: 'Cheap Trick', spotifyMonthlyListeners: 8500000, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4354/2026-08-05/zz-top', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-06', name: 'Brahms & Bizet', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4316/2026-08-06/brahms-bizet', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-06', name: 'RÜFÜS DU SOL', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/rufus-du-sol-north-america-2026-inglewood-california-08-06-2026/event/0900644BFCB72440', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-07', name: 'Maddix', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-07', name: 'Program to be announced', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4317/2026-08-07/program-to-be-announced', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-07', name: 'RÜFÜS DU SOL', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/rufus-du-sol-north-america-2026-inglewood-california-08-07-2026/event/09006455E5DFE35A?referrer=https%3A%2F%2Fwww.ticketmaster.com%2Fsearch%3Fq%3Drufus', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-08', name: 'Ed Sheeran', venue: 'SoFi Stadium', genre: 'Pop', support: '', spotifyMonthlyListeners: 83109614, ticketUrl: 'https://www.ticketmaster.com/event/0A006331DC273765?utm_medium=referral&utm_source=sofistadium.com&utm_content=event_listing&CAMEFROM=CFC_SOFI_WEB_EVENTSLISTING', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-08', name: 'Program to be announced', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4349/2026-08-08/program-to-be-announced', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-09', name: '_How to Train Your Dragon_ in Concert', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4319/2026-08-09/how-to-train-your-dragon-in-concert', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-10', name: 'John Mellencamp', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 5800000, ticketUrl: 'https://www.hollywoodbowl.com/events/', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-11', name: 'Jill Scott', venue: 'YouTube Theater', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 3500000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-11', name: 'Mozart Under the Stars', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4320/2026-08-11/mozart-under-the-stars', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-11', name: 'RÜFÜS DU SOL', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/rufus-du-sol-north-america-2026-inglewood-california-08-11-2026/event/09006455E5EDE39D?referrer=https%3A%2F%2Fwww.ticketmaster.com%2Fsearch%3Fq%3Drufus', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-12', name: 'Jill Scott', venue: 'YouTube Theater', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 3500000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-12', name: 'RÜFÜS DU SOL', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/rufus-du-sol-north-america-2026-inglewood-california-08-12-2026/event/09006455E5F2E3B2', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-13', name: 'RÜFÜS DU SOL', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/rufus-du-sol-north-america-2026-inglewood-california-08-13-2026/event/09006455E5F7E3C2', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-13', name: 'Santana & The Doobie Brothers', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 15261903, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-13', name: 'Santana The Doobie Brothers', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4364/2026-08-13/santana', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-14', name: 'Al Green', venue: 'Hollywood Bowl', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 7200000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-14', name: 'Al Green The Womack Sisters', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4321/2026-08-14/al-green', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-15', name: 'MEGHAN TRAINOR', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/meghan-trainor-the-get-in-girl-inglewood-california-08-15-2026/event/0900636BE15BF95A', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-15', name: 'Noah Kahan', venue: 'Rose Bowl', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 42000000, ticketUrl: 'https://www.ticketmaster.com/noah-kahan-the-great-divide-tour-pasadena-california-08-15-2026/event/0B0064417CB517BA', ticketVendor: 'Ticketmaster', onSaleDate: '2026-08-01T10:00', presaleDate: '2026-07-29T10:00' },
+  { date: '2026-08-15', name: '_Top Gun: Maverick_ in Concert', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4353/2026-08-15/top-gun-maverick-in-concert', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-17', name: 'The Black Crowes', venue: 'Greek Theatre', genre: 'Rock', support: 'Whiskey Myers', spotifyMonthlyListeners: 2936405, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-17', name: 'The Black Crowes & Tedeschi Trucks Band Whiskey Myers', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4352/2026-08-17/the-black-crowes-tedeschi-trucks-band', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-18', name: 'Gershwin, Bernstein & More', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4323/2026-08-18/gershwin-bernstein-more', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-19', name: 'Herbie Hancock Celebrates Miles Davis', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4324/2026-08-19/herbie-hancock-celebrates-miles-davis', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-19', name: 'i-dle', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/idle-world-tour-syncopation-inglewood-california-08-19-2026/event/09006463B323B020', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-20', name: 'Celebrating Gustavo at the Bowl: Beethoven 9', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4325/2026-08-20/celebrating-gustavo-at-the-bowl-beethoven-9', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-21', name: 'Celebrating Gustavo at the Bowl: Dudamel\'s Playlist', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4326/2026-08-21/celebrating-gustavo-at-the-bowl-dudamels-playlist', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-21', name: 'Dudamel\'s Playlist', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-21', name: 'Goldfinger', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-21', name: 'NE-YO & AKON', venue: 'Intuit Dome', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 8000000, ticketUrl: 'https://www.ticketmaster.com/intuit-dome-tickets-inglewood/venue/74834', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-22', name: 'Celebrating Gustavo at the Bowl: Foo Fighters', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4287/2026-08-22/celebrating-gustavo-at-the-bowl-foo-fighters-with-the-la-phil-and-yola', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-22', name: 'Foo Fighters', venue: 'Hollywood Bowl', genre: 'Rock', support: 'LA Phil', spotifyMonthlyListeners: 22000000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-22', name: 'The Breeders', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-23', name: 'A Musical Legacy', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-23', name: 'Celebrating Gustavo at the Bowl: A Musical Legacy', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4361/2026-08-23/celebrating-gustavo-at-the-bowl-a-musical-legacy', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-23', name: 'Foo Fighters', venue: 'Hollywood Bowl', genre: 'Rock', support: 'LA Phil', spotifyMonthlyListeners: 22000000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-24', name: 'Courtney Barnett - Creature of Habit Tour', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-25', name: 'Beethoven’s Fifth', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4330/2026-08-25/beethovens-fifth', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-27', name: 'Crankdat', venue: 'Shrine Auditorium', genre: 'Electronic/EDM', support: '', spotifyMonthlyListeners: 300000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-27', name: 'Rachmaninoff & Adams', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4327/2026-08-27/rachmaninoff-adams', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-28', name: 'Program to be announced', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4328/2026-08-28/program-to-be-announced', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-28', name: 'ZAYN', venue: 'Intuit Dome', genre: 'Pop', support: '', spotifyMonthlyListeners: 22000000, ticketUrl: 'https://www.vividseats.com/zayn-malik-tickets-inglewood-intuit-dome-8-28-2026--concerts-pop/production/6626250', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-29', name: 'Courtney Barnett', venue: 'Hollywood Palladium', genre: 'Rock', support: 'Built To Spill', spotifyMonthlyListeners: 3400000, ticketUrl: 'https://www.ticketmaster.com/search?q=courtney+barnett', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-29', name: 'Program to be announced', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4329/2026-08-29/program-to-be-announced', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-08-29', name: 'Stephen Wilson Jr. - Gary The Torch Tour', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  // ── SEPTEMBER 2026 ──
+  { date: '2026-09-01', name: 'BTS', venue: 'SoFi Stadium', genre: 'Pop', support: 'ARIRANG', spotifyMonthlyListeners: 52000000, ticketUrl: 'https://www.sofistadium.com/events/detail/bts-september-1-2026', ticketVendor: 'SoFi Stadium Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-01', name: 'Dvořák & Bruch', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4331/2026-09-01/dvorak-bruch', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-02', name: 'BTS', venue: 'SoFi Stadium', genre: 'Pop', support: 'ARIRANG', spotifyMonthlyListeners: 52000000, ticketUrl: 'https://www.sofistadium.com/events/detail/bts-september-2-2026', ticketVendor: 'SoFi Stadium Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-03', name: 'J. Cole', venue: 'Intuit Dome', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 39786025, ticketUrl: 'https://www.ticketmaster.com/j-cole-the-falloff-tour-los-angeles-california-09-07-2026/event/2C0064529BE01DBE', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-03', name: '_Amadeus_ in Concert', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4332/2026-09-03/amadeus-in-concert', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-04', name: 'J. Cole', venue: 'Intuit Dome', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 39786025, ticketUrl: 'https://www.ticketmaster.com/j-cole-the-falloff-tour-los-angeles-california-09-07-2026/event/2C0064529BE01DBE', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-05', name: 'BTS', venue: 'SoFi Stadium', genre: 'Pop', support: 'ARIRANG', spotifyMonthlyListeners: 52000000, ticketUrl: 'https://www.sofistadium.com/events/detail/bts-september-5-2026', ticketVendor: 'SoFi Stadium Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-05', name: 'Guns N\' Roses', venue: 'Rose Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/guns-n-roses-world-tour-2026-pasadena-california-09-05-2026/event/0B006375B6DA8A5E', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-06', name: 'BTS', venue: 'SoFi Stadium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.sofistadium.com/events/detail/bts-september-6-2026', ticketVendor: 'SoFi Stadium Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-06', name: 'CHICAGO & STYX', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/chicago-styx-the-windy-cities-tour-inglewood-california-09-06-2026/event/09006379EB8CC553', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-06', name: 'San Holo presents TRUE LOVE IN A MADE UP WORLD', venue: 'Hollywood Palladium', genre: 'Pop', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-09', name: 'Buddy Guy 90', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4337/2026-09-09/buddy-guy-90', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-10', name: 'Bleachers', venue: 'The Fonda Theatre', genre: 'Rock', support: '', spotifyMonthlyListeners: 10106395, ticketUrl: 'https://www.ticketmaster.com/search?q=bleachers', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-10', name: 'Ravel, Debussy & Saint-Saëns', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4338/2026-09-10/ravel-debussy-saint-saens', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-11', name: 'OneRepublic', venue: 'Hollywood Bowl', genre: 'Pop', support: '', spotifyMonthlyListeners: 35000000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-12', name: 'OneRepublic', venue: 'Hollywood Bowl', genre: 'Pop', support: '', spotifyMonthlyListeners: 35000000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-13', name: 'Lucy Dacus', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-14', name: 'Jack Harlow', venue: 'Hollywood Palladium', genre: 'Hip-Hop/R&B', support: '', spotifyMonthlyListeners: 26700000, ticketUrl: 'https://www.ticketmaster.com/jack-harlow-monica-tour-hollywood-california-09-14-2026/event/09006471809E4335', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-14', name: 'Peter Hook & The Light', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-15', name: 'Andrea Bocelli', venue: 'Hollywood Bowl', genre: 'Pop', support: '', spotifyMonthlyListeners: 14000000, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4356/2026-09-15/andrea-bocelli', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-16', name: 'Andrea Bocelli', venue: 'Hollywood Bowl', genre: 'Pop', support: '', spotifyMonthlyListeners: 14000000, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4357/2026-09-16/andrea-bocelli', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-18', name: 'Orville Peck', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4355/2026-09-18/orville-peck', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-18', name: 'Orville Peck', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-19', name: 'Peter Hook & The Light', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 500000, ticketUrl: 'https://www.ticketmaster.com/search?q=peter+hook', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-19', name: 'SUGAR - Love You Even Still 2026 World Tour', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-20', name: 'Gregory Alan Isakov', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4344/2026-09-20/gregory-alan-isakov-with-the-hollywood-bowl-orchestra', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-23', name: 'ROBYN', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/robyn-the-sexistential-tour-inglewood-california-09-23-2026/event/0900643CE7CDE833', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-24', name: 'Jon Bellion', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4509/2026-09-24/jon-bellion', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-24', name: 'Jon Bellion', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-24', name: 'ROBYN', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/robyn-the-sexistential-tour-inglewood-california-09-24-2026/event/09006443DF9D9804', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-25', name: 'LILY ALLEN', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/lily-allen-performs-west-end-girl-inglewood-california-09-25-2026/event/09006479C571AE7D', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-26', name: 'BILLY STRINGS', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/billy-strings-inglewood-california-09-26-2026/event/0900647CF670C42D', ticketVendor: 'Ticketmaster', onSaleDate: '2026-04-03T10:00', presaleDate: '2026-04-02T10:00' },
+  { date: '2026-09-26', name: '_Rodgers & Hammerstein’s The Sound of Music Sing-A-Long_', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4342/2026-09-26/rodgers-hammersteins-the-sound-of-music-sing-a-long', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-27', name: 'Jon Batiste', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4346/2026-09-27/jon-batiste', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-28', name: 'Disney Descendants, ZOMBIES & Camp Rock: Worlds Collide Concert Tour', venue: 'Crypto.com Arena', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-30', name: 'Bruno Mars', venue: 'SoFi Stadium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/event/0A006451D6B8C1D4?utm_medium=referral&utm_source=sofistadium.com&utm_content=event_listing&CAMEFROM=CFC_SOFI_WEB_EVENTSLISTING', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-30', name: 'DISNEY DESCENDANTS, ZOMBIES & CAMP ROCK: WORLDS COLLIDE CONCERT TOUR', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/disney-descendants-zombies-camp-rock-worlds-inglewood-california-09-30-2026/event/0900646CCB2DC5B5', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-30', name: 'Rubén Blades & Roberto Delgado Big Band: Fotografías Tour Silvana Estrada', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4347/2026-09-30/ruben-blades-roberto-delgado-big-band-fotografias-tour', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-30', name: 'Rubén Blades & Roberto Delgado Big Band: Fotografías Tour', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-30', name: 'Social Distortion', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-09-30', name: 'Sugar', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 300000, ticketUrl: 'https://www.ticketmaster.com/search?q=sugar+bob+mould', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  // ── OCTOBER 2026 ──
+  { date: '2026-10-01', name: 'Social Distortion', venue: 'Hollywood Palladium', genre: 'Rock', support: 'Descendents', spotifyMonthlyListeners: 2000000, ticketUrl: 'https://www.ticketmaster.com/search?q=social+distortion', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-01', name: 'THOMAS RHETT', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/thomas-rhett-the-soundtrack-to-life-inglewood-california-10-01-2026/event/09006466BF660B98', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-02', name: 'Bruno Mars', venue: 'Crypto.com Arena', genre: 'Pop', support: '', spotifyMonthlyListeners: 75000000, ticketUrl: 'https://www.ticketmaster.com/event/0A006396BA615BBE?utm_medium=referral&utm_source=sofistadium.com&utm_content=event_listing&CAMEFROM=CFC_SOFI_WEB_EVENTSLISTING', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-02', name: 'SEX PISTOLS (Steve Jones, Paul Cook, Glen Matlock) feat. Frank Carter', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-03', name: 'Bruno Mars', venue: 'Crypto.com Arena', genre: 'Pop', support: '', spotifyMonthlyListeners: 75000000, ticketUrl: 'https://www.ticketmaster.com/event/0A006396E80D747B?utm_medium=referral&utm_source=sofistadium.com&utm_content=event_listing&CAMEFROM=CFC_SOFI_WEB_EVENTSLISTING', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-06', name: 'Bruno Mars', venue: 'SoFi Stadium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/event/0A006426C23B4B2A?utm_medium=referral&utm_source=sofistadium.com&utm_content=event_listing&CAMEFROM=CFC_SOFI_WEB_EVENTSLISTING', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-06', name: 'MUMFORD & SONS', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/mumford-sons-prizefighter-tour-inglewood-california-10-06-2026/event/09006452D41C6346', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-07', name: 'Bruno Mars', venue: 'SoFi Stadium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/event/0A006426C2444B31?utm_medium=referral&utm_source=sofistadium.com&utm_content=event_listing&CAMEFROM=CFC_SOFI_WEB_EVENTSLISTING', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-07', name: 'Gabriel "Fluffy" Iglesias & Jo Koy', venue: 'SoFi Stadium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.sofistadium.com/events/detail/gabriel-fluffy-iglesias-jo-koy', ticketVendor: 'SoFi Stadium Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-07', name: 'MUMFORD & SONS', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/mumford-sons-prizefighter-tour-inglewood-california-10-07-2026/event/09006457A9B1D055', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-07', name: 'Sip & Stroll at SoFi Stadium', venue: 'SoFi Stadium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.sofistadium.com/events/detail/sofi-tour-sip-wine-stroll-march-29', ticketVendor: 'SoFi Stadium Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-09', name: 'Mac DeMarco', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4363/2026-10-09/mac-demarco', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-09', name: 'THE NEIGHBOURHOOD', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/the-neighbourhood-the-wourld-tour-inglewood-california-10-09-2026/event/0900635E02A5A5C0', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-10', name: 'JUNGLE', venue: 'Crypto.com Arena', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.axs.com/events/1373198/jungle-tickets', ticketVendor: 'AXS', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-10', name: 'Jack Johnson', venue: 'Greek Theatre', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 13453613, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-10', name: 'Jack Johnson Hermanos Gutiérrez', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4256/2026-10-10/jack-johnson', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-11', name: 'Jack Johnson', venue: 'Greek Theatre', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 13453613, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-11', name: 'Jack Johnson Hermanos Gutiérrez', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4257/2026-10-11/jack-johnson', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-16', name: 'JUANES', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/juanes-north-america-tour-2026-inglewood-california-10-16-2026/event/0900644E0BF15E32', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-18', name: 'Gorillaz', venue: 'Kia Forum', genre: 'Rock', support: 'Little Simz, Deltron 3030', spotifyMonthlyListeners: 43517438, ticketUrl: '', ticketVendor: '', onSaleDate: '2026-08-01T10:00', presaleDate: '2026-07-31T10:00' },
+  { date: '2026-10-18', name: 'In Collab With', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-18', name: 'Membership', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-18', name: 'Plan Your Visit', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-18', name: 'Private Events', venue: 'Hollywood Palladium', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-18', name: 'Sex Pistols Experience', venue: 'Hollywood Palladium', genre: 'Rock', support: 'Frank Carter', spotifyMonthlyListeners: 4000000, ticketUrl: 'https://www.ticketmaster.com/search?q=sex+pistols+experience', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-21', name: 'My Chemical Romance', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 18000000, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4231/2026-10-21/my-chemical-romance', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-22', name: 'DOJA CAT', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/doja-cat-tour-ma-vie-world-inglewood-california-10-22-2026/event/0900633A1B2389F9', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-22', name: 'My Chemical Romance', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 18000000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-23', name: 'My Chemical Romance', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4232/2026-10-23/my-chemical-romance', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-24', name: 'GORILLAZ', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/gorillaz-the-mountain-tour-inglewood-california-10-24-2026/event/0900645BA891CBBF', ticketVendor: 'Ticketmaster', onSaleDate: '2026-08-01T10:00', presaleDate: '2026-07-31T10:00' },
+  { date: '2026-10-24', name: 'My Chemical Romance', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 18000000, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4233/2026-10-24/my-chemical-romance', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-24', name: 'NCAA West Regional', venue: 'Crypto.com Arena', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-24', name: 'Weezer: The Gathering', venue: 'Crypto.com Arena', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-29', name: 'A Twink and A Redhead', venue: 'The Regent Theater', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-30', name: 'Kanan Gill', venue: 'El Rey Theatre', genre: 'Pop', support: '', spotifyMonthlyListeners: 100000, ticketUrl: 'https://www.ticketmaster.com/search?q=kanan+gill', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-30', name: 'My Chemical Romance', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 18000000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-30', name: 'My Chemical Romance The Used', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4263/2026-10-30/my-chemical-romance', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-31', name: 'My Chemical Romance', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 18000000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-10-31', name: 'My Chemical Romance Thrice', venue: 'Hollywood Bowl', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.hollywoodbowl.com/events/performances/4264/2026-10-31/my-chemical-romance', ticketVendor: 'Hollywood Bowl Box Office', onSaleDate: '', presaleDate: '' },
+  // ── NOVEMBER 2026 ──
+  { date: '2026-11-07', name: 'Demi Lovato', venue: 'Crypto.com Arena', genre: 'Pop', support: '', spotifyMonthlyListeners: 33915351, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-11-14', name: 'Tame Impala', venue: 'Kia Forum', genre: 'Indie/Folk', support: '', spotifyMonthlyListeners: 48411326, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  { date: '2026-11-15', name: 'RAWAYANA', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/rawayana-donde-es-el-after-world-inglewood-california-11-15-2026/event/0900646DB256B395', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+  { date: '2026-11-21', name: 'NieR: Orchestra Concert', venue: 'Shrine Auditorium', genre: 'Electronic/EDM', support: '', spotifyMonthlyListeners: 3000000, ticketUrl: '', ticketVendor: '', onSaleDate: '', presaleDate: '' },
+  // ── DECEMBER 2026 ──
+  { date: '2026-12-04', name: 'THE NEIGHBOURHOOD', venue: 'Kia Forum', genre: 'Rock', support: '', spotifyMonthlyListeners: 0, ticketUrl: 'https://www.ticketmaster.com/the-neighbourhood-the-wourld-tour-inglewood-california-12-04-2026/event/09006443CD5C89D1', ticketVendor: 'Ticketmaster', onSaleDate: '', presaleDate: '' },
+];
+
+const WISHLIST_ARTISTS = [
+  'Jack Harlow','Lazewo','Jigitz','JCole','Fred Again',
+  'Kendrick Lamar','Tame Impala','Disco Lines','Notion','James Hype',
+  'Justice','Chris Lake','Central Cee','Wes Mills','Nimino',
+  'Maribou State','Flume','JBEE','Riodan','Polo & Pan',
+  'Mau P','Dave','Jamie xx','Its Murph','Chris Lorenzo',
+  'Disclosure','Jungle','Kaytranada','Odesza','Swimming Paul',
+  "Barry Can't Swim",'Burna Boy','Skepta','AJ Tracey','Zuan',
+  'ATRIP','Skrillex'
+];
+
+const GENRE_CLASS = { 'Hip-Hop/R&B':'genre-hiphop','Electronic/EDM':'genre-electronic','Rock':'genre-rock','Pop':'genre-pop','Indie/Folk':'genre-indie','Punk':'genre-punk','Latin':'genre-latin' };
+const GENRE_COLOR = { 'Hip-Hop/R&B':'#9c27b0','Electronic/EDM':'#0096d1','Rock':'#e65100','Pop':'#e91e63','Indie/Folk':'#00b87a','Punk':'#d32f2f','Latin':'#ff9800' };
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+// ── VENUE PRICE TIERS ──
+// tier 1 = $20-50 (intimate clubs), tier 2 = $40-90 (mid-size), tier 3 = $60-150 (large), tier 4 = $80-300+ (arenas/stadiums)
+const VENUE_PRICE = {
+  'Troubadour': { tier: 1, range: '$20–50', label: '$' },
+  'The Roxy Theatre': { tier: 1, range: '$20–50', label: '$' },
+  'El Rey Theatre': { tier: 1, range: '$25–55', label: '$' },
+  'The Regent Theater': { tier: 1, range: '$20–45', label: '$' },
+  'The Fonda Theatre': { tier: 2, range: '$35–75', label: '$$' },
+  'The Wiltern': { tier: 2, range: '$40–90', label: '$$' },
+  'Academy LA': { tier: 2, range: '$30–70', label: '$$' },
+  'The Novo': { tier: 2, range: '$40–85', label: '$$' },
+  'Hollywood Palladium': { tier: 2, range: '$45–95', label: '$$' },
+  'Shrine Auditorium': { tier: 3, range: '$55–130', label: '$$$' },
+  'Greek Theatre': { tier: 3, range: '$50–150', label: '$$$' },
+  'Hollywood Bowl': { tier: 3, range: '$20–175', label: '$$$' },
+  'Kia Forum': { tier: 3, range: '$60–180', label: '$$$' },
+  'YouTube Theater': { tier: 3, range: '$50–140', label: '$$$' },
+  'Crypto.com Arena': { tier: 4, range: '$80–300+', label: '$$$$' },
+  'Intuit Dome': { tier: 4, range: '$80–300+', label: '$$$$' },
+  'SoFi Stadium': { tier: 4, range: '$90–400+', label: '$$$$' },
+  'Rose Bowl': { tier: 4, range: '$80–350+', label: '$$$$' },
+  'The Peppermint Club': { tier: 1, range: '$25–60', label: '$' }
+};
+
+// ── VENUE → DEFAULT VENDOR (fills data gaps) ──
+const VENUE_DEFAULT_VENDOR = {
+  'Hollywood Bowl': 'Hollywood Bowl Box Office',
+  'Greek Theatre': 'Ticketmaster',
+  'Kia Forum': 'Ticketmaster',
+  'Crypto.com Arena': 'AXS',
+  'SoFi Stadium': 'Ticketmaster',
+  'The Wiltern': 'Ticketmaster',
+  'The Fonda Theatre': 'Ticketmaster',
+  'Troubadour': 'Troubadour Box Office',
+  'YouTube Theater': 'Ticketmaster',
+  'The Regent Theater': 'Ticketmaster',
+  'Rose Bowl': 'Ticketmaster',
+  'Hollywood Palladium': 'Ticketmaster',
+  'Academy LA': 'Academy LA Box Office',
+  'El Rey Theatre': 'Ticketmaster',
+  'Intuit Dome': 'AXS',
+  'Shrine Auditorium': 'AXS',
+  'The Novo': 'AXS',
+  'The Roxy Theatre': 'The Roxy Box Office',
+  'The Peppermint Club': 'Peppermint Club Box Office'
+};
+
+// ── FIX DATA GAPS: infer vendor from venue ──
+CONCERTS.forEach(function(c) {
+  if (!c.ticketVendor && VENUE_DEFAULT_VENDOR[c.venue]) {
+    c.ticketVendor = VENUE_DEFAULT_VENDOR[c.venue];
+  }
+});
+
+function getPriceBadge(ev) {
+  var p = VENUE_PRICE[ev.venue];
+  if (!p) return '';
+  return '<span class="price-tag tier-' + p.tier + '" title="Typical range: ' + p.range + '">' + p.label + ' ' + p.range + '</span>';
+}
+function getPriceLabel(ev) {
+  var p = VENUE_PRICE[ev.venue];
+  return p ? p.label : '';
+}
+
+let currentMonth = 3, currentYear = 2026, currentView = 'calendar';
+let hidePast = true;
+function toggleHidePast() { hidePast = document.getElementById('hidePastCheck').checked; applyFilters(); }
+function isPastDate(dateStr) { return dateStr < new Date().toISOString().slice(0,10); }
+function isToday(dateStr) { return dateStr === new Date().toISOString().slice(0,10); }
+let filteredConcerts = [...CONCERTS];
+const ALL_VENUES = [...new Set(CONCERTS.map(c => c.venue))].sort();
+const ALL_GENRES = [...new Set(CONCERTS.map(c => c.genre))].sort();
+let selectedVenues = new Set(ALL_VENUES);
+let selectedGenres = new Set(ALL_GENRES);
+
+function concertSort(a, b) {
+  var aEdm = a.genre === 'Electronic/EDM' ? 0 : 1;
+  var bEdm = b.genre === 'Electronic/EDM' ? 0 : 1;
+  if (aEdm !== bEdm) return aEdm - bEdm;
+  return (b.spotifyMonthlyListeners || 0) - (a.spotifyMonthlyListeners || 0);
+}
+
+let watchlist = new Set();
+try { const s = localStorage.getItem('la_concert_watchlist'); if (s) watchlist = new Set(JSON.parse(s)); } catch(e) {}
+function saveWatchlist() { try { localStorage.setItem('la_concert_watchlist', JSON.stringify([...watchlist])); } catch(e) {} updateWatchlistBanner(); }
+
+let trackedArtists = [...WISHLIST_ARTISTS];
+try { const s = localStorage.getItem('la_tracked_artists'); if (s) trackedArtists = JSON.parse(s); } catch(e) {}
+function saveTrackedArtists() { try { localStorage.setItem('la_tracked_artists', JSON.stringify(trackedArtists)); } catch(e) {} updateArtistAlertBanner(); }
+
+
+function generateGCalUrl(ev) {
+  var d = new Date(ev.date + 'T19:00:00');
+  var end = new Date(ev.date + 'T23:00:00');
+  function fmt(dt) {
+    return dt.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  }
+  var title = encodeURIComponent(ev.name + (ev.support ? ' w/ ' + ev.support : ''));
+  var details = encodeURIComponent('Genre: ' + ev.genre + (ev.ticketUrl ? '\nTickets: ' + ev.ticketUrl : '') + '\n\nAdded from LA Concert Tracker');
+  var location = encodeURIComponent(ev.venue + ', Los Angeles, CA');
+  return 'https://www.google.com/calendar/render?action=TEMPLATE&text=' + title + '&dates=' + fmt(d) + '/' + fmt(end) + '&details=' + details + '&location=' + location + '&sf=true&output=xml';
+}
+
+function parseSaleDate(s) {
+  if (!s) return null;
+  // Handle both "2026-04-02" and "2026-04-02T15:00" formats
+  var hasTime = s.indexOf('T') > -1;
+  var dt = hasTime ? new Date(s) : new Date(s + 'T12:00:00');
+  var timePart = hasTime ? s.split('T')[1] : '';
+  return { date: dt, dateStr: s.slice(0, 10), hasTime: hasTime, timeStr: timePart };
+}
+
+function formatSaleTime(parsed) {
+  if (!parsed || !parsed.hasTime) return '';
+  var h = parseInt(parsed.timeStr.split(':')[0]), m = parsed.timeStr.split(':')[1];
+  var ampm = h >= 12 ? 'PM' : 'AM';
+  h = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+  return h + ':' + m + ' ' + ampm;
+}
+
+function formatListeners(n) {
+  if (!n || n <= 0) return '';
+  if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(0) + 'K';
+  return n.toString();
+}
+
+function getVendorBadge(ev) {
+  if (!ev.ticketVendor) return '';
+  var cls = 'vendor-tag';
+  var v = ev.ticketVendor.toLowerCase();
+  if (v.includes('ticketmaster')) cls += ' ticketmaster';
+  else if (v.includes('axs')) cls += ' axs';
+  else if (v.includes('bowl')) cls += ' bowl';
+  return '<span class="' + cls + '">' + ev.ticketVendor + '</span>';
+}
+
+function getSaleBadge(ev) {
+  if (!ev.onSaleDate && !ev.presaleDate) return '';
+  var today = new Date().toISOString().slice(0, 10);
+  var badges = '';
+  if (ev.presaleDate) {
+    var p = parseSaleDate(ev.presaleDate);
+    if (p.dateStr > today) {
+      var days = Math.ceil((p.date - new Date()) / 86400000);
+      var timeStr = formatSaleTime(p);
+      badges += '<span class="sale-badge presale">PRESALE ' + (days <= 3 ? 'in ' + days + 'd' : p.date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})) + (timeStr ? ' @ ' + timeStr : '') + '</span>';
+    }
+  }
+  if (ev.onSaleDate) {
+    var o = parseSaleDate(ev.onSaleDate);
+    if (o.dateStr > today) {
+      var days = Math.ceil((o.date - new Date()) / 86400000);
+      var cls = days <= 3 ? 'onsale-soon' : 'onsale';
+      var timeStr = formatSaleTime(o);
+      badges += '<span class="sale-badge ' + cls + '">ON SALE ' + (days <= 7 ? 'in ' + days + 'd' : o.date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})) + (timeStr ? ' @ ' + timeStr : '') + '</span>';
+    } else if (o.dateStr <= today) {
+      badges += '<span class="sale-badge onsale">ON SALE NOW</span>';
+    }
+  }
+  return badges;
+}
+
+function toggleWatchlist(key) { if (watchlist.has(key)) watchlist.delete(key); else watchlist.add(key); saveWatchlist(); if (currentView === 'myartists') renderMyArtistsView(); }
+function concertKey(c) { return c.date + '|' + c.name + '|' + c.venue; }
+function normalizeForMatch(s) { return s.toLowerCase().replace(/[\s\.\-&''']/g, '').replace(/[^a-z0-9]/g, ''); }
+function isWatchedArtist(n) { var cn = normalizeForMatch(n); return trackedArtists.some(function(a) { var an = normalizeForMatch(a); return cn===an||cn.includes(an)||an.includes(cn); }); }
+
+function updateWatchlistBanner() {
+  document.getElementById('wlCount').textContent = watchlist.size;
+  var today = new Date().toISOString().slice(0,10), next = null;
+  CONCERTS.forEach(function(c) { if (watchlist.has(concertKey(c)) && c.date >= today) { if (!next || c.date < next.date) next = c; } });
+  var el = document.getElementById('wlNextSale');
+  if (next) { var d = new Date(next.date+'T12:00:00'); el.textContent = 'Next: '+next.name+' \u2022 '+d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); } else { el.textContent = ''; }
+}
+
+function renderFilterChips() {
+  var vc=document.getElementById('venueChips'), allV=selectedVenues.size===ALL_VENUES.length;
+  var vh='<div class="filter-chip select-all'+(allV?' active':'')+'" onclick="toggleAllVenues()">All</div>';
+  ALL_VENUES.forEach(function(v){vh+='<div class="filter-chip'+(selectedVenues.has(v)?' active':'')+'" onclick="toggleVenue(\''+v.replace(/'/g,"\\'")+'\')">' +v+'</div>';});
+  vc.innerHTML=vh;
+  var gc=document.getElementById('genreChips'), allG=selectedGenres.size===ALL_GENRES.length;
+  var gh='<div class="filter-chip select-all'+(allG?' active':'')+'" onclick="toggleAllGenres()">All</div>';
+  ALL_GENRES.forEach(function(g){gh+='<div class="filter-chip'+(selectedGenres.has(g)?' active':'')+'" onclick="toggleGenre(\''+g.replace(/'/g,"\\'")+'\')">' +g+'</div>';});
+  gc.innerHTML=gh;
+}
+
+function toggleVenue(v){if(selectedVenues.has(v))selectedVenues.delete(v);else selectedVenues.add(v);renderFilterChips();applyFilters();}
+function toggleGenre(g){if(selectedGenres.has(g))selectedGenres.delete(g);else selectedGenres.add(g);renderFilterChips();applyFilters();}
+function toggleAllVenues(){if(selectedVenues.size===ALL_VENUES.length)selectedVenues.clear();else selectedVenues=new Set(ALL_VENUES);renderFilterChips();applyFilters();}
+function toggleAllGenres(){if(selectedGenres.size===ALL_GENRES.length)selectedGenres.clear();else selectedGenres=new Set(ALL_GENRES);renderFilterChips();applyFilters();}
+
+function applyFilters(){
+  filteredConcerts=CONCERTS.filter(function(c){return selectedVenues.has(c.venue)&&selectedGenres.has(c.genre);});
+  var showCount=hidePast?filteredConcerts.filter(function(c){return c.date>=new Date().toISOString().slice(0,10);}).length:filteredConcerts.length;
+  document.getElementById('resultCount').innerHTML='<span>'+showCount+'</span> shows';
+  renderCalendar(); if(currentView==='list')renderListView(); if(currentView==='myartists')renderMyArtistsView(); updateArtistAlertBanner();
+}
+
+function setView(v){
+  currentView=v;
+  document.getElementById('calViewBtn').classList.toggle('active',v==='calendar');
+  document.getElementById('listViewBtn').classList.toggle('active',v==='list');
+  document.getElementById('myartistsViewBtn').classList.toggle('active',v==='myartists');
+  document.getElementById('calendarWrap').style.display=v==='calendar'?'':'none';
+  document.getElementById('monthNavWrap').style.display=v==='calendar'?'':'none';
+  document.getElementById('monthDots').style.display=v==='calendar'?'':'none';
+  document.getElementById('legendWrap').style.display=v==='calendar'?'':'none';
+  document.getElementById('listWrap').classList.toggle('active',v==='list');
+  document.getElementById('myArtistsWrap').classList.toggle('active',v==='myartists');
+  if(v==='list')renderListView(); if(v==='myartists')renderMyArtistsView();
+}
+
+function renderListView(){
+  var today=new Date().toISOString().slice(0,10);
+  var sorted=filteredConcerts.slice().sort(function(a,b){return a.date<b.date?-1:1;});
+  if(hidePast)sorted=sorted.filter(function(c){return c.date>=today;});
+  var grouped={};
+  sorted.forEach(function(c){if(!grouped[c.date])grouped[c.date]=[];grouped[c.date].push(c);});
+  var html='';
+  Object.keys(grouped).sort().forEach(function(date){
+    var d=new Date(date+'T12:00:00');
+    var past=date<today;
+    var todayLabel=date===today?' — TODAY':'';
+    html+='<div class="list-date-group"><div class="list-date-header'+(past?' past-date':'')+'">'+d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+todayLabel+'</div>';
+    grouped[date].sort(concertSort).forEach(function(ev){
+      var cls=GENRE_CLASS[ev.genre]||'genre-rock',key=concertKey(ev),starred=watchlist.has(key),watched=isWatchedArtist(ev.name);
+      var wb=watched?'<span class="wl-star-badge">\u2605</span>':'';
+      var supportText=ev.support?'<div class="list-event-support" title="'+ev.support+'">w/ '+ev.support+'</div>':'';
+      var priceText=getPriceLabel(ev)?'<div class="list-event-price">'+getPriceLabel(ev)+'</div>':'';
+      html+='<div class="list-event'+(watched?' watched-artist':'')+(past?' past-event':'')+'" onclick="openModalForEvent(\''+ev.date+'\',\''+ev.name.replace(/'/g,"\\'")+'\')">'
+        +'<span class="watchlist-star '+(starred?'active':'')+'" onclick="event.stopPropagation();toggleWatchlist(\''+key.replace(/'/g,"\\'")+'\');renderListView();">&#11088;</span>'
+        +'<div class="list-event-name">'+wb+ev.name+supportText+'</div>'
+        +priceText
+        +'<div class="list-event-venue">'+ev.venue+'</div>'
+        +'<div class="list-event-genre '+cls+'">'+ev.genre+'</div></div>';
+    });
+    html+='</div>';
+  });
+  if(!html)html='<div class="empty-month"><span class="emoji">&#127925;</span>No upcoming shows match your filters</div>';
+  document.getElementById('listWrap').innerHTML=html;
+}
+
+function renderMyArtistsView(){
+  var today=new Date().toISOString().slice(0,10), html='';
+  // Saved shows
+  var saved=CONCERTS.filter(function(c){return watchlist.has(concertKey(c))&&c.date>=today;}).sort(function(a,b){return a.date<b.date?-1:1;});
+  html+='<div class="ma-section"><div class="ma-section-title">Saved Shows <span class="ma-count cyan">'+saved.length+'</span></div>';
+  if(!saved.length){html+='<div class="ma-no-shows">No saved shows yet. Star any show to track it here.</div>';}
+  else{html+='<div class="ma-saved-list">';saved.forEach(function(ev){
+    var cls=GENRE_CLASS[ev.genre]||'genre-rock',d=new Date(ev.date+'T12:00:00'),ds=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}),key=concertKey(ev);
+    var tb=ev.ticketUrl?'<a class="ticket-btn" href="'+ev.ticketUrl+'" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M22 10V6a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 010 4v4a2 2 0 002 2h16a2 2 0 002-2v-4a2 2 0 010-4zm-2-1.46a4 4 0 000 6.92V18H4v-2.54a4 4 0 000-6.92V6h16v2.54z"/></svg>Tickets</a>':'';
+    var gcb3='<a class="gcal-btn" href="'+generateGCalUrl(ev)+'" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5zm2 4h5v5H7v-5z"/></svg>Add to Cal</a>';
+    var saleBdg3=getSaleBadge(ev);
+    var vendorBdg3=getVendorBadge(ev);
+    var priceBdg3=getPriceBadge(ev);
+    var badgeRow3=(saleBdg3||vendorBdg3||priceBdg3)?'<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">'+priceBdg3+vendorBdg3+saleBdg3+'</div>':'';
+    var supportHtml3=ev.support?'<div style="margin-top:4px;font-size:0.75rem;color:var(--text-secondary);"><span style="color:var(--text-dim);font-size:0.6rem;font-family:var(--font-display);letter-spacing:0.06em;text-transform:uppercase;margin-right:5px;">Opening</span>'+ev.support+'</div>':'';
+    html+='<div class="modal-event '+cls+'"><div class="modal-event-name"><span class="watchlist-star active" onclick="toggleWatchlist(\''+key.replace(/'/g,"\\'")+'\');renderMyArtistsView();">&#11088;</span>'+ev.name+'</div>'
+      +'<div class="modal-event-meta"><span class="meta-tag">'+ds+'</span><span class="meta-tag">'+ev.venue+'</span><span class="meta-tag">'+ev.genre+'</span></div>'
+      +supportHtml3+badgeRow3
+      +'<div class="modal-btn-row">'+tb+gcb3+'</div></div>';
+  });html+='</div>';}
+  html+='</div>';
+  // Playing in LA
+  var withShows=[],watching=[],matchedNames=new Set();
+  trackedArtists.forEach(function(a){var c=getMatchingConcerts(a).filter(function(c){return c.date>=today;});if(c.length>0){matchedNames.add(a);c.forEach(function(cc){withShows.push({artistName:a,concert:cc});});}else{watching.push(a);}});
+  withShows.sort(function(a,b){return a.concert.date<b.concert.date?-1:1;});
+  html+='<div class="ma-section"><div class="ma-section-title">Watchlist \u2014 Playing in LA <span class="ma-count cyan">'+withShows.length+(withShows.length===1?' show':' shows')+'</span></div>';
+  if(!withShows.length){html+='<div class="ma-no-shows">None of your watched artists have upcoming LA shows yet.</div>';}
+  else{html+='<table class="ma-table"><thead><tr><th>Artist</th><th>Date</th><th>Venue</th><th>Price</th><th>Vendor</th><th>Tickets</th></tr></thead><tbody>';
+    withShows.forEach(function(item){var d=new Date(item.concert.date+'T12:00:00'),ds=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      var isPastShow=item.concert.date<today;
+      if(hidePast&&isPastShow)return;
+      var tu=item.concert.ticketUrl||'https://www.google.com/search?q='+encodeURIComponent(item.concert.name+' tickets los angeles 2026');
+      var vn=item.concert.ticketVendor||'—';
+      var saleBdg4=getSaleBadge(item.concert);
+      var priceInfo=VENUE_PRICE[item.concert.venue];
+      var priceTd=priceInfo?'<td style="font-size:0.62rem;font-family:var(--font-display);font-weight:600;white-space:nowrap;"><span class="price-tag tier-'+priceInfo.tier+'">'+priceInfo.label+'</span></td>':'<td>—</td>';
+      var supportSub=item.concert.support?'<div style="font-size:0.62rem;color:var(--text-dim);font-style:italic;margin-top:1px;">w/ '+item.concert.support+'</div>':'';
+      html+='<tr'+(isPastShow?' class="past-row"':'')+'><td><div class="ma-artist-cell"><span class="star-icon">\u2605</span>'+item.artistName+(saleBdg4?' '+saleBdg4:'')+'</div>'+supportSub+'</td><td class="ma-date-cell">'+ds+'</td><td class="ma-venue-cell">'+item.concert.venue+'</td>'+priceTd+'<td style="font-size:0.65rem;color:var(--text-secondary);">'+vn+'</td><td class="ma-ticket-cell"><a class="ma-ticket-link" href="'+tu+'" target="_blank" rel="noopener">'+(item.concert.ticketUrl?'Buy':'Find')+'</a></td></tr>';
+    });html+='</tbody></table>';}
+  html+='</div>';
+  // ── YOUR WATCHLIST: full roster + add ──
+  html+='<div class="ma-section"><div class="ma-section-title">Your Watchlist <span class="ma-count cyan">'+trackedArtists.length+' artists</span></div>';
+  // Add single
+  html+='<div style="margin-bottom:16px;"><div class="ma-input-row"><input type="text" class="ma-input" id="newArtistInput" placeholder="Add an artist..." autocomplete="off"><button class="ma-add-btn" onclick="addArtistFromInput()">Add</button></div></div>';
+  // Bulk add
+  html+='<div style="margin-bottom:18px;"><div class="ma-add-title" style="margin-bottom:6px;">Paste multiple artists (one per line)</div>'
+    +'<textarea class="ma-input" id="bulkArtistInput" rows="3" style="width:100%;resize:vertical;font-size:0.75rem;" placeholder="Artist 1\nArtist 2\nArtist 3"></textarea>'
+    +'<button class="ma-add-btn" style="margin-top:6px;" onclick="addBulkArtists()">Add All</button></div>';
+  // Full artist grid
+  html+='<div class="ma-watching-grid">';
+  trackedArtists.slice().sort(function(a,b){return a.toLowerCase()<b.toLowerCase()?-1:1;}).forEach(function(name){
+    var hasShow=matchedNames.has(name);
+    html+='<div class="ma-pill'+(hasShow?' ma-pill-matched':'')+'">'
+      +(hasShow?'<span style="color:var(--neon-cyan);font-size:0.6rem;margin-right:2px;">\u25CF</span>':'')
+      +name
+      +'<button class="pill-remove" onclick="removeTrackedArtist(\''+name.replace(/'/g,"\\'")+'\')">&#x2715;</button></div>';
+  });
+  html+='</div>';
+  html+='<div style="margin-top:10px;font-size:0.65rem;color:var(--text-dim);"><span style="color:var(--neon-cyan);">\u25CF</span> = has upcoming LA show</div>';
+  html+='</div>';
+  document.getElementById('myArtistsWrap').innerHTML=html;
+  var inp=document.getElementById('newArtistInput');if(inp)inp.addEventListener('keypress',function(e){if(e.key==='Enter')addArtistFromInput();});
+}
+
+function addTrackedArtist(n){n=n.trim();if(!n)return;if(!trackedArtists.includes(n)){trackedArtists.push(n);saveTrackedArtists();renderMyArtistsView();}}
+function addBulkArtists(){var ta=document.getElementById('bulkArtistInput');if(!ta)return;var lines=ta.value.split('\n');var added=0;lines.forEach(function(l){l=l.trim();if(l&&!trackedArtists.includes(l)){trackedArtists.push(l);added++;}});if(added>0){saveTrackedArtists();renderMyArtistsView();}ta.value='';}
+function removeTrackedArtist(n){trackedArtists=trackedArtists.filter(function(a){return a!==n;});saveTrackedArtists();renderMyArtistsView();}
+function getMatchingConcerts(a){var an=normalizeForMatch(a);return CONCERTS.filter(function(c){var cn=normalizeForMatch(c.name);return cn===an||cn.includes(an)||an.includes(cn);}).sort(function(a,b){return a.date<b.date?-1:1;});}
+function addArtistFromInput(){var i=document.getElementById('newArtistInput');if(!i)return;addTrackedArtist(i.value);i.value='';i.focus();}
+
+function updateArtistAlertBanner(){
+  var banner=document.getElementById('artistAlertBanner'),mc=0;
+  trackedArtists.forEach(function(a){if(getMatchingConcerts(a).length>0)mc++;});
+  if(mc>0){banner.classList.add('show');document.getElementById('artistAlertCount').textContent=mc;document.getElementById('artistAlertText').textContent=mc+' watched artist'+(mc!==1?'s':'')+' playing in LA';}
+  else{banner.classList.remove('show');}
+}
+
+function renderCalendar(){
+  document.getElementById('monthLabel').textContent=MONTHS[currentMonth]+' '+currentYear;
+  var grid=document.getElementById('calGrid'),firstDay=new Date(currentYear,currentMonth,1).getDay(),dim=new Date(currentYear,currentMonth+1,0).getDate();
+  var today=new Date(),ts=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0'),html='';
+  for(var i=0;i<firstDay;i++)html+='<div class="cal-cell empty"></div>';
+  for(var day=1;day<=dim;day++){
+    var ds=currentYear+'-'+String(currentMonth+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    var de=filteredConcerts.filter(function(c){return c.date===ds;}).sort(concertSort);
+    var isT=ds===ts,isPast=ds<ts,hasE=de.length>0,hasW=de.some(function(ev){return isWatchedArtist(ev.name);}),chips='',mx=6;
+    if(hidePast&&isPast&&!isT){html+='<div class="cal-cell past-day'+(hasE?' has-events':'')+'"><div class="day-num">'+day+'</div>'+(hasE?'<div class="more-events" style="opacity:0.6;">'+de.length+' show'+(de.length>1?'s':'')+'</div>':'')+'</div>';continue;}
+    de.slice(0,mx).forEach(function(ev){var cl=GENRE_CLASS[ev.genre]||'genre-rock',w=isWatchedArtist(ev.name);chips+='<div class="event-chip '+cl+(w?' watched-artist':'')+'">'+ev.name+(ev.support?'<div class="support-tag">w/ '+ev.support+'</div>':'')+'</div>';});
+    if(de.length>mx)chips+='<div class="more-events">+'+(de.length-mx)+' more</div>';
+    var dn=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],dl=dn[new Date(currentYear,currentMonth,day).getDay()];
+    var todayBadge=isT?'<span class="today-badge">TODAY</span>':'';
+    html+='<div class="cal-cell'+(hasE?' has-events':'')+(isT?' today':'')+(hasW?' has-watched':'')+'"'+(hasE?' onclick="openModal(\''+ds+'\')"':'')+'><div class="day-num"><span class="day-label">'+dl+'</span>'+day+todayBadge+'</div>'+chips+'</div>';
+  }
+  grid.innerHTML=html;renderMonthDots();
+}
+
+function renderMonthDots(){var h='';for(var m=0;m<12;m++){var has=filteredConcerts.some(function(c){var d=new Date(c.date);return d.getMonth()===m&&d.getFullYear()===currentYear;});h+='<div class="month-dot'+(m===currentMonth?' active':'')+(has?' has-events':'')+'" title="'+MONTHS[m]+'" onclick="goToMonth('+m+')"></div>';}document.getElementById('monthDots').innerHTML=h;}
+function goToMonth(m){currentMonth=m;renderCalendar();}
+function prevMonth(){if(currentMonth>0){currentMonth--;renderCalendar();}}
+function nextMonth(){if(currentMonth<11){currentMonth++;renderCalendar();}}
+
+function openModal(ds){
+  var de=filteredConcerts.filter(function(c){return c.date===ds;}).sort(concertSort);
+  if(!de.length)return;var p=ds.split('-').map(Number),dobj=new Date(p[0],p[1]-1,p[2]);
+  var today=new Date().toISOString().slice(0,10);var past=ds<today;
+  document.getElementById('modalDate').textContent=dobj.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+(ds===today?' — TODAY':'')+(past?' — PAST':'');
+  var body='';de.forEach(function(ev){
+    var cls=GENRE_CLASS[ev.genre]||'genre-rock',key=concertKey(ev),starred=watchlist.has(key);
+    var tb=ev.ticketUrl?'<a class="ticket-btn" href="'+ev.ticketUrl+'" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M22 10V6a2 2 0 00-2-2H4a2 2 0 00-2 2v4a2 2 0 010 4v4a2 2 0 002 2h16a2 2 0 002-2v-4a2 2 0 010-4zm-2-1.46a4 4 0 000 6.92V18H4v-2.54a4 4 0 000-6.92V6h16v2.54z"/></svg>Tickets</a>':'';
+    var sb='<a class="spotify-btn" href="https://open.spotify.com/search/'+encodeURIComponent(ev.name)+'" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>Spotify</a>';
+    var gcb='<a class="gcal-btn" href="'+generateGCalUrl(ev)+'" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5zm2 4h5v5H7v-5z"/></svg>Add to Cal</a>';
+    var saleBdg=getSaleBadge(ev);
+    var br='<div class="modal-btn-row"><span class="watchlist-star '+(starred?'active':'')+'" style="font-size:1.2rem;cursor:pointer;" onclick="toggleWatchlist(\''+key.replace(/'/g,"\\'")+'\');openModal(\''+ds+'\');">&#11088;</span>'+tb+sb+gcb+'</div>';
+    var iw=isWatchedArtist(ev.name),wb=iw?' <span style="font-size:0.55rem;background:var(--neon-amber-dim);color:var(--neon-amber);border:1px solid rgba(255,215,64,0.3);border-radius:3px;padding:1px 6px;font-family:var(--font-display);font-weight:700;letter-spacing:0.08em;vertical-align:middle;">WATCHING</span>':'';
+    var vendorBdg=getVendorBadge(ev);
+    var priceBdg=getPriceBadge(ev);
+    var badgeRow=(saleBdg||vendorBdg||priceBdg)?'<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">'+priceBdg+vendorBdg+saleBdg+'</div>':'';
+    var supportHtml=ev.support?'<div style="margin-top:6px;font-size:0.78rem;color:var(--text-secondary);"><span style="color:var(--text-dim);font-size:0.65rem;font-family:var(--font-display);letter-spacing:0.06em;text-transform:uppercase;margin-right:6px;">Opening</span>'+ev.support+'</div>':'';
+    body+='<div class="modal-event '+cls+(past?' past-event-modal':'')+'"><div class="modal-event-name">'+ev.name+wb+'</div><div class="modal-event-meta"><span class="meta-tag">'+ev.venue+'</span><span class="meta-tag">'+ev.genre+'</span>'+(ev.spotifyMonthlyListeners>0?'<span class="meta-tag">'+formatListeners(ev.spotifyMonthlyListeners)+' listeners</span>':'')+'</div>'+supportHtml+badgeRow+br+'</div>';
+  });
+  document.getElementById('modalBody').innerHTML=body;document.getElementById('modalOverlay').classList.add('open');
+}
+function openModalForEvent(d,n){openModal(d);}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
+function closeModalOutside(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+
+function renderLegend(){
+  var g=[...new Set(CONCERTS.map(function(c){return c.genre;}))].sort();
+  document.getElementById('legend').innerHTML=g.map(function(g){return '<div class="legend-item" onclick="toggleGenre(\''+g+'\')"><div class="legend-swatch '+GENRE_CLASS[g]+'"></div>'+g+'</div>';}).join('');
+}
+
+(function(){
+  var input=document.getElementById('artistSearch'),dd=document.getElementById('searchDropdown'),hi=-1,cm=[];
+  function gm(q){if(!q||q.length<2)return[];var ql=q.toLowerCase(),s=new Set(),r=[];CONCERTS.forEach(function(c){if(c.name.toLowerCase().includes(ql)){var k=c.name.toLowerCase();if(!s.has(k)){s.add(k);r.push({name:c.name});}}});return r.slice(0,10);}
+  function rd(){if(!cm.length){dd.classList.remove('open');return;}dd.innerHTML=cm.map(function(m,i){return '<div class="search-item'+(i===hi?' highlighted':'')+'" data-idx="'+i+'">'+m.name+'</div>';}).join('');dd.classList.add('open');}
+  function sa(n){var m=CONCERTS.filter(function(c){return c.name.toLowerCase()===n.toLowerCase();});if(!m.length)return;var p=m[0].date.split('-').map(Number);currentMonth=p[1]-1;currentYear=p[0];setView('calendar');renderCalendar();openModal(m[0].date);input.value='';dd.classList.remove('open');cm=[];hi=-1;}
+  input.addEventListener('input',function(){hi=-1;cm=gm(input.value.trim());rd();});
+  input.addEventListener('keydown',function(e){if(!cm.length)return;if(e.key==='ArrowDown'){e.preventDefault();hi=Math.min(hi+1,cm.length-1);rd();}else if(e.key==='ArrowUp'){e.preventDefault();hi=Math.max(hi-1,0);rd();}else if(e.key==='Enter'&&hi>=0){e.preventDefault();sa(cm[hi].name);}else if(e.key==='Escape'){dd.classList.remove('open');input.blur();}});
+  dd.addEventListener('click',function(e){var it=e.target.closest('.search-item');if(!it)return;sa(cm[parseInt(it.dataset.idx)].name);});
+  document.addEventListener('click',function(e){if(!e.target.closest('.search-wrap'))dd.classList.remove('open');});
+})();
+
+document.addEventListener('keydown',function(e){if(document.activeElement===document.getElementById('artistSearch')||document.activeElement===document.getElementById('newArtistInput'))return;if(e.key==='Escape')closeModal();if(e.key==='ArrowLeft')prevMonth();if(e.key==='ArrowRight')nextMonth();});
+
+function updateStickyOffsets(){if(window.innerWidth>700)return;var h=document.querySelector('header'),mn=document.querySelector('.month-nav'),md=document.querySelector('.month-dots'),lw=document.querySelector('.legend-wrap'),t=h.offsetHeight;mn.style.top=t+'px';t+=mn.offsetHeight;md.style.top=t+'px';t+=md.offsetHeight;lw.style.top=t+'px';}
+window.addEventListener('resize',updateStickyOffsets);window.addEventListener('load',updateStickyOffsets);
+
+function toggleDrops() {
+  document.getElementById('dropsSection').classList.toggle('open');
+}
+
+function renderUpcomingDrops() {
+  var today = new Date().toISOString().slice(0, 10);
+  var drops = CONCERTS.filter(function(c) {
+    if (c.onSaleDate) { var d = c.onSaleDate.slice(0, 10); return d >= today; }
+    if (c.presaleDate) { var d = c.presaleDate.slice(0, 10); return d >= today; }
+    return false;
+  }).sort(function(a, b) {
+    var ad = (a.onSaleDate || a.presaleDate).slice(0, 10);
+    var bd = (b.onSaleDate || b.presaleDate).slice(0, 10);
+    return ad < bd ? -1 : 1;
+  });
+
+  var section = document.getElementById('dropsSection');
+  var body = document.getElementById('dropsBody');
+  var countEl = document.getElementById('dropsCount');
+
+  if (!drops.length) { section.classList.remove('has-drops'); return; }
+  section.classList.add('has-drops');
+  countEl.textContent = drops.length + ' upcoming';
+
+  var html = '';
+  drops.forEach(function(ev) {
+    var saleDate = ev.onSaleDate || ev.presaleDate;
+    var parsed = parseSaleDate(saleDate);
+    var days = Math.ceil((parsed.date - new Date()) / 86400000);
+    var timeStr = formatSaleTime(parsed);
+    var monthNames = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+
+    var countdownText = '';
+    if (days <= 0) countdownText = 'TODAY';
+    else if (days === 1) countdownText = 'TOMORROW';
+    else if (days <= 7) countdownText = days + ' DAYS';
+    else countdownText = days + ' DAYS';
+
+    var countdownCls = days <= 2 ? 'drop-countdown imminent' : 'drop-countdown';
+    var vendorBdg = getVendorBadge(ev);
+    var watched = isWatchedArtist(ev.name);
+    var watchBdg = watched ? '<span style="font-size:0.55rem;background:var(--neon-amber-dim);color:var(--neon-amber);border:1px solid rgba(255,215,64,0.3);border-radius:3px;padding:1px 6px;font-family:var(--font-display);font-weight:700;letter-spacing:0.08em;">WATCHING</span>' : '';
+
+    html += '<div class="drop-card">';
+    html += '<div class="drop-date-col">';
+    html += '<div class="month-label">' + monthNames[parsed.date.getMonth()] + '</div>';
+    html += '<div class="day">' + parsed.date.getDate() + '</div>';
+    if (timeStr) html += '<div class="time-label">' + timeStr + '</div>';
+    html += '</div>';
+    html += '<div class="drop-info">';
+    html += '<div class="drop-artist">' + ev.name + '</div>';
+    html += '<div class="drop-meta">' + ev.venue + ' &bull; ' + new Date(ev.date + 'T12:00:00').toLocaleDateString('en-US', {month: 'long', day: 'numeric'}) + '</div>';
+    html += '<div class="drop-badges">';
+    html += '<span class="' + countdownCls + '">' + countdownText + '</span>';
+    if (vendorBdg) html += vendorBdg;
+    if (watchBdg) html += watchBdg;
+    var presaleParsed = parseSaleDate(ev.presaleDate);
+    var onsaleParsed = parseSaleDate(ev.onSaleDate);
+    if (ev.presaleDate && ev.onSaleDate && ev.presaleDate !== ev.onSaleDate) {
+      html += '<span class="sale-badge presale">PRESALE ' + presaleParsed.date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) + (formatSaleTime(presaleParsed) ? ' @ ' + formatSaleTime(presaleParsed) : '') + '</span>';
+      html += '<span class="sale-badge onsale">GENERAL ' + onsaleParsed.date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) + (formatSaleTime(onsaleParsed) ? ' @ ' + formatSaleTime(onsaleParsed) : '') + '</span>';
+    }
+    html += '</div>';
+    html += '</div></div>';
+  });
+
+  body.innerHTML = html;
+
+  // Set collapsed preview: show the next upcoming drop
+  var preview = document.getElementById('dropsPreview');
+  if (drops.length) {
+    var next = drops[0];
+    var saleDate = next.onSaleDate || next.presaleDate;
+    var parsed = parseSaleDate(saleDate);
+    var days = Math.ceil((parsed.date - new Date()) / 86400000);
+    var when = days <= 0 ? 'today' : days === 1 ? 'tomorrow' : 'in ' + days + ' days';
+    preview.innerHTML = 'Next: <strong>' + next.name + '</strong> goes on sale ' + when;
+  }
+}
+
+renderFilterChips();renderLegend();applyFilters();updateWatchlistBanner();updateArtistAlertBanner();renderUpcomingDrops();updateStickyOffsets();
+</script>
+</body>
+</html>
