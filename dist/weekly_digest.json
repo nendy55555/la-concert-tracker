@@ -1,0 +1,189 @@
+{
+  "generated_at": "2026-04-20T22:42:54-07:00",
+  "as_of": "2026-04-20",
+  "horizon_days": 300,
+  "onsale_days": 14,
+  "watch_hits": [
+    {
+      "watchlist_artist": "JCole",
+      "name": "J. Cole",
+      "date": "2026-09-03",
+      "venue": "Intuit Dome",
+      "genre": "Hip-Hop/R&B",
+      "support": "",
+      "ticket_url": "https://www.ticketmaster.com/j-cole-the-falloff-tour-los-angeles-california-09-07-2026/event/2C0064529BE01DBE",
+      "ticket_vendor": "Ticketmaster",
+      "on_sale_date": "",
+      "presale_date": "",
+      "days_until": 136
+    },
+    {
+      "watchlist_artist": "JCole",
+      "name": "J. Cole",
+      "date": "2026-09-04",
+      "venue": "Intuit Dome",
+      "genre": "Hip-Hop/R&B",
+      "support": "",
+      "ticket_url": "https://www.ticketmaster.com/j-cole-the-falloff-tour-los-angeles-california-09-07-2026/event/2C0064529BE01DBE",
+      "ticket_vendor": "Ticketmaster",
+      "on_sale_date": "",
+      "presale_date": "",
+      "days_until": 137
+    },
+    {
+      "watchlist_artist": "Jack Harlow",
+      "name": "Jack Harlow",
+      "date": "2026-09-14",
+      "venue": "Hollywood Palladium",
+      "genre": "Hip-Hop/R&B",
+      "support": "",
+      "ticket_url": "https://www.ticketmaster.com/jack-harlow-monica-tour-hollywood-california-09-14-2026/event/09006471809E4335",
+      "ticket_vendor": "Ticketmaster",
+      "on_sale_date": "",
+      "presale_date": "",
+      "days_until": 147
+    },
+    {
+      "watchlist_artist": "Jungle",
+      "name": "JUNGLE",
+      "date": "2026-10-10",
+      "venue": "Crypto.com Arena",
+      "genre": "Rock",
+      "support": "",
+      "ticket_url": "https://www.axs.com/events/1373198/jungle-tickets",
+      "ticket_vendor": "AXS",
+      "on_sale_date": "",
+      "presale_date": "",
+      "days_until": 173
+    },
+    {
+      "watchlist_artist": "Tame Impala",
+      "name": "Tame Impala",
+      "date": "2026-11-14",
+      "venue": "Kia Forum",
+      "genre": "Indie/Folk",
+      "support": "",
+      "ticket_url": "",
+      "ticket_vendor": "",
+      "on_sale_date": "",
+      "presale_date": "",
+      "days_until": 208
+    }
+  ],
+  "onsale_hits": [],
+  "per_artist": {
+    "Jack Harlow": [
+      {
+        "watchlist_artist": "Jack Harlow",
+        "name": "Jack Harlow",
+        "date": "2026-09-14",
+        "venue": "Hollywood Palladium",
+        "genre": "Hip-Hop/R&B",
+        "support": "",
+        "ticket_url": "https://www.ticketmaster.com/jack-harlow-monica-tour-hollywood-california-09-14-2026/event/09006471809E4335",
+        "ticket_vendor": "Ticketmaster",
+        "on_sale_date": "",
+        "presale_date": "",
+        "days_until": 147
+      }
+    ],
+    "Lazewo": [],
+    "Jigitz": [],
+    "JCole": [
+      {
+        "watchlist_artist": "JCole",
+        "name": "J. Cole",
+        "date": "2026-09-03",
+        "venue": "Intuit Dome",
+        "genre": "Hip-Hop/R&B",
+        "support": "",
+        "ticket_url": "https://www.ticketmaster.com/j-cole-the-falloff-tour-los-angeles-california-09-07-2026/event/2C0064529BE01DBE",
+        "ticket_vendor": "Ticketmaster",
+        "on_sale_date": "",
+        "presale_date": "",
+        "days_until": 136
+      },
+      {
+        "watchlist_artist": "JCole",
+        "name": "J. Cole",
+        "date": "2026-09-04",
+        "venue": "Intuit Dome",
+        "genre": "Hip-Hop/R&B",
+        "support": "",
+        "ticket_url": "https://www.ticketmaster.com/j-cole-the-falloff-tour-los-angeles-california-09-07-2026/event/2C0064529BE01DBE",
+        "ticket_vendor": "Ticketmaster",
+        "on_sale_date": "",
+        "presale_date": "",
+        "days_until": 137
+      }
+    ],
+    "Fred Again": [],
+    "Kendrick Lamar": [],
+    "Tame Impala": [
+      {
+        "watchlist_artist": "Tame Impala",
+        "name": "Tame Impala",
+        "date": "2026-11-14",
+        "venue": "Kia Forum",
+        "genre": "Indie/Folk",
+        "support": "",
+        "ticket_url": "",
+        "ticket_vendor": "",
+        "on_sale_date": "",
+        "presale_date": "",
+        "days_until": 208
+      }
+    ],
+    "Disco Lines": [],
+    "Notion": [],
+    "James Hype": [],
+    "Justice": [],
+    "Chris Lake": [],
+    "Central Cee": [],
+    "Wes Mills": [],
+    "Nimino": [],
+    "Maribou State": [],
+    "Flume": [],
+    "JBEE": [],
+    "Riodan": [],
+    "Polo & Pan": [],
+    "Mau P": [],
+    "Dave": [],
+    "Jamie xx": [],
+    "Its Murph": [],
+    "Chris Lorenzo": [],
+    "Disclosure": [],
+    "Jungle": [
+      {
+        "watchlist_artist": "Jungle",
+        "name": "JUNGLE",
+        "date": "2026-10-10",
+        "venue": "Crypto.com Arena",
+        "genre": "Rock",
+        "support": "",
+        "ticket_url": "https://www.axs.com/events/1373198/jungle-tickets",
+        "ticket_vendor": "AXS",
+        "on_sale_date": "",
+        "presale_date": "",
+        "days_until": 173
+      }
+    ],
+    "Kaytranada": [],
+    "Odesza": [],
+    "Swimming Paul": [],
+    "Barry Can't Swim": [],
+    "Burna Boy": [],
+    "Skepta": [],
+    "AJ Tracey": [],
+    "Zuan": [],
+    "ATRIP": [],
+    "Skrillex": []
+  },
+  "totals": {
+    "concerts": 399,
+    "watchlist_artists": 37,
+    "watch_hits": 5,
+    "onsale_hits": 0,
+    "artists_with_shows": 4
+  }
+}

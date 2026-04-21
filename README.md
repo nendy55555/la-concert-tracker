@@ -25,12 +25,28 @@ Single `index.html` file. No build step. Inline CSS + JS. Concert data lives as 
 
 ## Updating data
 
-Run the data refresh workflow (Firecrawl scrape → venue parsers → merge). A scheduled task `la-concert-watchlist-alert` runs daily at 9am and emails watchlist matches.
+Edit the `CONCERTS` array inside `index.html` directly. Run `bash tests/run_all.sh` before pushing — the tests catch malformed rows, unknown venues/genres, and bad date formats.
+
+## Weekly digest
+
+A scheduled task `weekly-concert-email` runs Sunday at 09:03 PT. It executes `scripts/weekly_digest.py` (pure Python, zero Claude reasoning), which reads `CONCERTS` + `WISHLIST_ARTISTS` from `index.html` and produces an HTML email. Claude's only remaining job is calling the Gmail `create_draft` MCP tool once. Runs fine on Haiku.
+
+Manual run: `python3 scripts/weekly_digest.py --horizon-days 180 --text`
 
 ## Deploy
 
 Pushed to `main` → GitHub Pages auto-publishes. No CI needed.
 
+## Tests
+
+`bash tests/run_all.sh` — 38 Python tests + 9 JS parity cases, <2s, no network, no Claude API.
+
 ## Project docs
 
-Agent docs in `docs/agent/` — `QUICKSTART.md` and `SESSION-STATE.md` carry context across sessions.
+Agent docs in `docs/agent/`:
+- `QUICKSTART.md` — routing + file map
+- `SESSION-STATE.md` — rolling what-changed log
+- `AUDIT.md` — post-hardening Claude-call map
+- `DECISIONS.md` — reasoning behind design choices
+- `RUNBOOK.md` — "how do I…" for common ops
+- `HARDENING-INVENTORY.md` — what was hardened and why

@@ -1,47 +1,59 @@
 # LA Concert Tracker — Quickstart
 
 ## What Is This
-Single-file HTML concert tracker for Los Angeles. 428 concerts across 18 venues, April–November 2026. Cyberpunk neon design (Orbitron + IBM Plex Mono).
+Single-file HTML concert tracker for LA. 399 concerts across 18 venues, April–November 2026. Cyberpunk neon design (Orbitron + IBM Plex Mono).
+
+## Hardened state (as of 2026-04-20)
+- Static site has **zero Claude runtime dependency**.
+- Weekly digest (`weekly-concert-email` scheduled task) runs a **pure Python script** — no WebSearch, no Firecrawl, no Chrome. Claude's only job is calling `create_draft` once.
+- Full test suite in `tests/`. Run `bash tests/run_all.sh` before any data push.
+- Target model tier for scheduled task: **Haiku**.
+- See `RUNBOOK.md` for "how do I…" answers.
 
 ## Architecture
-Everything lives in `index.html`. No build system. CSS + JS inline. Data is a `CONCERTS` array of objects at the top of the `<script>` block (~line 1195).
+Everything lives in `index.html`. No build system. CSS + JS inline. Data is a `CONCERTS` array of objects at the top of the `<script>` block (~line 1334).
 
 ## Key Data Fields
 ```
 { date, name, venue, genre, support, spotifyMonthlyListeners, ticketUrl, ticketVendor, onSaleDate, presaleDate }
 ```
-- `ticketVendor`: Auto-detected from URL domain. Ticketmaster: 116, Hollywood Bowl: 88, others smaller, 190 unknown.
-- `onSaleDate` / `presaleDate`: Format `YYYY-MM-DDThh:mm` or `YYYY-MM-DD`. Currently populated for 5 events.
 
 ## Features
-- Calendar / List / My Artists views
-- Watchlist (localStorage) with star toggle
-- Artist tracking (WISHLIST_ARTISTS + manual add) with fuzzy match
-- Venue + genre filters
-- Google Calendar export per show
-- Vendor badges (color-coded by vendor)
-- On-sale date badges with countdown + time display
-- **Upcoming Ticket Drops** banner (auto-shows events with future on-sale dates)
-- Search by artist name
+Calendar / List / My Artists views · watchlist (localStorage) · artist tracking with fuzzy match · venue + genre filters · Google Calendar export · vendor + on-sale badges with countdown · Upcoming Ticket Drops banner · artist search.
 
 ## Current State
-- Last updated: April 20, 2026
-- Last data refresh: March 31, 2026
-- 428 concerts, 18 venues
-- **Deployed to GitHub Pages:** https://nendy55555.github.io/la-concert-tracker/ (unlisted — `noindex` meta + robots.txt)
-- In-flight: nothing (clean state)
-- Known gaps: most on-sale dates still empty, Fonda/Troubadour thin, Spotify counts default 0 for scraped entries
+- 399 concerts, 18 venues (+ Peppermint Club defensively).
+- Deployed: https://nendy55555.github.io/la-concert-tracker/ (unlisted).
+- In-flight: nothing (clean state, hardened).
+- Tests: 38 Python + 9 JS parity, all pass in <2s.
+
+## Running the digest manually
+```bash
+cd ~/Documents/Claude/Projects/"LA Concert Tracker"
+python3 scripts/weekly_digest.py --horizon-days 180 --text
+```
+
+## Running the tests
+```bash
+bash tests/run_all.sh
+```
 
 ## Deploy
-- Repo: github.com/nendy55555/la-concert-tracker (public, but site is no-indexed)
-- Push to `main` → GitHub Pages auto-publishes within ~1 min
-- To update: edit `index.html`, `git add -A && git commit -m "msg" && git push`
+```bash
+git add -A && git commit -m "msg" && git push
+```
+GitHub Pages auto-publishes in ~60s.
 
-## Data Refresh
-Firecrawl scrape venue pages → venue-specific parsers → merge with existing data. See conversation history for parser details.
+## File Routing (line numbers)
+- Styles: 11–1092
+- HTML structure: 1093–1331
+- Concert data: 1334–1743
+- Wishlist: 1745–1754
+- Venue tables: 1756–1806
+- JS logic: 1808–2230
+- Scripts: `scripts/weekly_digest.py`
+- Tests: `tests/`
+- Docs: `docs/agent/` (SESSION-STATE, QUICKSTART, AUDIT, DECISIONS, RUNBOOK, HARDENING-INVENTORY)
 
-## File Routing
-- Styles: lines 10–1092
-- HTML structure: lines 1093–1195
-- Concert data: lines ~1195–1623
-- JS logic: lines ~1623–1998
+## When something breaks
+See `RUNBOOK.md` §7 — common failures and fixes. Most symptoms can be resolved without Claude.
