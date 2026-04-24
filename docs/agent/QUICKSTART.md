@@ -3,7 +3,7 @@
 ## What Is This
 Single-file HTML concert tracker for LA. 399 concerts across 18 venues, April–November 2026. Cyberpunk neon design (Orbitron + IBM Plex Mono).
 
-## Hardened state (as of 2026-04-20)
+## Hardened state (as of 2026-04-21)
 - Static site has **zero Claude runtime dependency**.
 - Weekly digest (`weekly-concert-email` scheduled task) runs a **pure Python script** — no WebSearch, no Firecrawl, no Chrome. Claude's only job is calling `create_draft` once.
 - Full test suite in `tests/`. Run `bash tests/run_all.sh` before any data push.
@@ -19,13 +19,15 @@ Everything lives in `index.html`. No build system. CSS + JS inline. Data is a `C
 ```
 
 ## Features
-Calendar / List / My Artists views · watchlist (localStorage) · artist tracking with fuzzy match · venue + genre filters · Google Calendar export · vendor + on-sale badges with countdown · Upcoming Ticket Drops banner · artist search.
+Calendar / List / My Artists views · watchlist (localStorage + optional Gist sync) · artist tracking with fuzzy match · venue + genre filters · Google Calendar export · vendor + on-sale badges with countdown · Upcoming Ticket Drops banner · artist search.
 
 ## Current State
 - 399 concerts, 18 venues (+ Peppermint Club defensively).
 - Deployed: https://nendy55555.github.io/la-concert-tracker/ (unlisted).
-- In-flight: nothing (clean state, hardened).
+- Watchlist persistence: localStorage + optional GitHub Gist auto-sync (gear icon in header). See `SETUP-GIST-SYNC.md`.
+- In-flight: nothing (clean state).
 - Tests: 38 Python + 9 JS parity, all pass in <2s.
+- WISHLIST_ARTISTS: 40 entries.
 
 ## Running the digest manually
 ```bash

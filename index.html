@@ -1229,11 +1229,90 @@
       flex-shrink: 0;
       white-space: nowrap;
     }
+    /* ── Gist sync UI ── */
+    .sync-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm, 6px);
+      font-size: 0.7rem;
+      font-family: var(--font-display);
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      z-index: 5;
+    }
+    .sync-btn:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+    .sync-btn .sync-dot { font-size: 0.85rem; line-height: 1; }
+    .sync-modal-body label {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin: 14px 0 6px;
+    }
+    .sync-modal-body input[type="text"], .sync-modal-body input[type="password"] {
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm, 6px);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      box-sizing: border-box;
+    }
+    .sync-modal-body input:focus { outline: none; border-color: var(--neon-cyan); }
+    .sync-modal-body p.help {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      line-height: 1.45;
+      margin: 4px 0 0;
+    }
+    .sync-modal-body p.help a { color: var(--neon-cyan); text-decoration: none; }
+    .sync-modal-body p.help a:hover { text-decoration: underline; }
+    .sync-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+    .sync-actions button {
+      padding: 9px 14px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      border-radius: var(--radius-sm, 6px);
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .sync-actions button.primary { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+    .sync-actions button.primary:hover { background: var(--neon-cyan-dim); }
+    .sync-actions button.danger { border-color: #ff5555; color: #ff5555; }
+    .sync-actions button.danger:hover { background: rgba(255,85,85,0.1); }
+    .sync-actions button:hover { border-color: var(--text-secondary); }
   </style>
 </head>
 <body>
 
-<header>
+<header style="position:relative;">
+  <button class="sync-btn" id="syncSettingsBtn" onclick="openSyncModal()" title="Watchlist sync settings">
+    <span class="sync-dot" id="syncDot">○</span>
+    <span id="syncLabel">Local</span>
+  </button>
   <div class="header-top">
     <h1>LA Concerts</h1>
     <span class="header-year">2026</span>
@@ -1319,6 +1398,40 @@
 <div class="my-artists-wrap" id="myArtistsWrap"></div>
 
 <!-- Modal -->
+<!-- Sync settings modal -->
+<div class="modal-overlay" id="syncModal" onclick="if(event.target===this)closeSyncModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-date">Watchlist sync</div>
+      <button class="modal-close" onclick="closeSyncModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body sync-modal-body">
+      <p class="help">
+        Sync your starred shows and tracked artists to a private GitHub Gist so they survive browser clears and follow you across devices.
+      </p>
+      <label for="syncPatInput">GitHub Personal Access Token</label>
+      <input type="password" id="syncPatInput" placeholder="ghp_..." autocomplete="off">
+      <p class="help">
+        Create one at <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">github.com/settings/tokens</a>.
+        Scope: <strong>gist</strong> only. Token is stored in this browser's localStorage.
+      </p>
+      <label for="syncGistInput">Gist ID (or click "Create new gist")</label>
+      <input type="text" id="syncGistInput" placeholder="e.g. 8a1b9c2d3e4f5..." autocomplete="off">
+      <p class="help">
+        Find the ID in the URL of your gist (the hex string after your username).
+      </p>
+      <div class="sync-actions">
+        <button class="primary" onclick="saveSyncSettings()">Save</button>
+        <button onclick="createNewGist()">Create new gist</button>
+        <button onclick="forcePushToGist()">Push now</button>
+        <button onclick="forcePullFromGist()">Pull now</button>
+        <button class="danger" onclick="disconnectSync()">Disconnect</button>
+      </div>
+      <p class="help" style="margin-top:14px;" id="syncStatusLine">Status: not configured.</p>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
   <div class="modal">
     <div class="modal-header">
@@ -1750,7 +1863,7 @@ const WISHLIST_ARTISTS = [
   'Mau P','Dave','Jamie xx','Its Murph','Chris Lorenzo',
   'Disclosure','Jungle','Kaytranada','Odesza','Swimming Paul',
   "Barry Can't Swim",'Burna Boy','Skepta','AJ Tracey','Zuan',
-  'ATRIP','Skrillex'
+  'ATRIP','Skrillex','Moby','Hugel','Cloonee'
 ];
 
 const GENRE_CLASS = { 'Hip-Hop/R&B':'genre-hiphop','Electronic/EDM':'genre-electronic','Rock':'genre-rock','Pop':'genre-pop','Indie/Folk':'genre-indie','Punk':'genre-punk','Latin':'genre-latin' };
@@ -1841,11 +1954,229 @@ function concertSort(a, b) {
 
 let watchlist = new Set();
 try { const s = localStorage.getItem('la_concert_watchlist'); if (s) watchlist = new Set(JSON.parse(s)); } catch(e) {}
-function saveWatchlist() { try { localStorage.setItem('la_concert_watchlist', JSON.stringify([...watchlist])); } catch(e) {} updateWatchlistBanner(); }
+function saveWatchlist() {
+  try { localStorage.setItem('la_concert_watchlist', JSON.stringify([...watchlist])); } catch(e) {}
+  updateWatchlistBanner();
+  if (typeof debouncedPushToGist === 'function') debouncedPushToGist();
+}
 
-let trackedArtists = [...WISHLIST_ARTISTS];
-try { const s = localStorage.getItem('la_tracked_artists'); if (s) trackedArtists = JSON.parse(s); } catch(e) {}
-function saveTrackedArtists() { try { localStorage.setItem('la_tracked_artists', JSON.stringify(trackedArtists)); } catch(e) {} updateArtistAlertBanner(); }
+// trackedArtists = union of hardcoded WISHLIST_ARTISTS ∪ localStorage extras.
+// This way, additions to the code list propagate to existing browsers, and
+// UI additions persist via localStorage. Case-insensitive de-dup.
+let trackedArtists = [];
+(function initTrackedArtists() {
+  var seen = new Set();
+  function add(name) {
+    if (!name) return;
+    var k = String(name).trim().toLowerCase();
+    if (!k || seen.has(k)) return;
+    seen.add(k);
+    trackedArtists.push(name);
+  }
+  WISHLIST_ARTISTS.forEach(add);
+  try {
+    var s = localStorage.getItem('la_tracked_artists');
+    if (s) JSON.parse(s).forEach(add);
+  } catch(e) {}
+})();
+function saveTrackedArtists() {
+  try { localStorage.setItem('la_tracked_artists', JSON.stringify(trackedArtists)); } catch(e) {}
+  updateArtistAlertBanner();
+  if (typeof debouncedPushToGist === 'function') debouncedPushToGist();
+}
+
+// ── Watchlist persistence: optional GitHub Gist auto-sync ──
+// When a PAT + gist ID are configured, the watchlist (starred shows) and
+// trackedArtists are mirrored to a private gist on every change. On page
+// load, the gist is fetched and merged with localStorage. No PAT = local only.
+const GIST_FILENAME = 'la-concert-tracker.json';
+let gistConfig = {
+  pat: (function(){ try { return localStorage.getItem('la_gist_pat') || ''; } catch(e) { return ''; } })(),
+  gistId: (function(){ try { return localStorage.getItem('la_gist_id') || ''; } catch(e) { return ''; } })()
+};
+let _syncStatus = 'idle';
+let _syncMsg = '';
+let _pushTimer = null;
+
+function gistConfigured() { return !!(gistConfig.pat && gistConfig.gistId); }
+function setSyncStatus(s, msg) {
+  _syncStatus = s;
+  _syncMsg = msg || '';
+  var dotEl = document.getElementById('syncDot');
+  var labelEl = document.getElementById('syncLabel');
+  var lineEl = document.getElementById('syncStatusLine');
+  if (!dotEl) return;
+  var dot, color, label, line;
+  if (!gistConfigured()) {
+    dot = '○'; color = 'var(--text-secondary)'; label = 'Local'; line = 'Status: not configured. Local-only mode.';
+  } else if (s === 'syncing') {
+    dot = '◐'; color = 'var(--neon-cyan)'; label = 'Syncing'; line = 'Status: syncing with gist…';
+  } else if (s === 'synced') {
+    dot = '●'; color = 'var(--neon-cyan)'; label = 'Synced'; line = 'Status: synced ' + new Date().toLocaleTimeString();
+  } else if (s === 'error') {
+    dot = '!'; color = '#ff5555'; label = 'Error'; line = 'Status: error — ' + (msg || 'unknown');
+  } else {
+    dot = '●'; color = 'var(--text-dim)'; label = 'Idle'; line = 'Status: idle.';
+  }
+  dotEl.style.color = color;
+  dotEl.textContent = dot;
+  labelEl.textContent = label;
+  if (lineEl) lineEl.textContent = line;
+}
+
+async function fetchFromGist() {
+  if (!gistConfigured()) return null;
+  setSyncStatus('syncing');
+  try {
+    var res = await fetch('https://api.github.com/gists/' + encodeURIComponent(gistConfig.gistId), {
+      headers: { 'Authorization': 'token ' + gistConfig.pat, 'Accept': 'application/vnd.github+json' }
+    });
+    if (!res.ok) {
+      var msg = res.status === 401 ? 'Bad token' : res.status === 404 ? 'Gist not found' : 'HTTP ' + res.status;
+      setSyncStatus('error', msg);
+      return null;
+    }
+    var data = await res.json();
+    var f = data.files && data.files[GIST_FILENAME];
+    if (!f) { setSyncStatus('synced'); return null; }
+    var parsed = JSON.parse(f.content);
+    setSyncStatus('synced');
+    return parsed;
+  } catch(e) { setSyncStatus('error', 'Network'); return null; }
+}
+
+async function pushToGist() {
+  if (!gistConfigured()) return;
+  setSyncStatus('syncing');
+  var payload = {
+    schemaVersion: 1,
+    updatedAt: new Date().toISOString(),
+    watchlist: [...watchlist],
+    trackedArtists: trackedArtists
+  };
+  var body = { files: {} };
+  body.files[GIST_FILENAME] = { content: JSON.stringify(payload, null, 2) };
+  try {
+    var res = await fetch('https://api.github.com/gists/' + encodeURIComponent(gistConfig.gistId), {
+      method: 'PATCH',
+      headers: {
+        'Authorization': 'token ' + gistConfig.pat,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) { setSyncStatus('error', 'Push HTTP ' + res.status); return; }
+    setSyncStatus('synced');
+  } catch(e) { setSyncStatus('error', 'Network'); }
+}
+
+function debouncedPushToGist() {
+  if (!gistConfigured()) { setSyncStatus(_syncStatus); return; }
+  if (_pushTimer) clearTimeout(_pushTimer);
+  _pushTimer = setTimeout(pushToGist, 1500);
+}
+
+async function initialGistSync() {
+  setSyncStatus(_syncStatus); // paint indicator with current config state
+  if (!gistConfigured()) return;
+  var remote = await fetchFromGist();
+  if (!remote) return;
+  // Merge: union of remote and local. Last-write-wins is fine for single user;
+  // union is safer than overwrite if user added something on each side.
+  var seen = new Set();
+  var merged = [];
+  function add(a) {
+    var k = (a||'').toString().trim().toLowerCase();
+    if (!k || seen.has(k)) return;
+    seen.add(k);
+    merged.push(a);
+  }
+  (remote.trackedArtists || []).forEach(add);
+  trackedArtists.forEach(add);
+  trackedArtists = merged;
+  (remote.watchlist || []).forEach(function(k) { watchlist.add(k); });
+  try { localStorage.setItem('la_tracked_artists', JSON.stringify(trackedArtists)); } catch(e) {}
+  try { localStorage.setItem('la_concert_watchlist', JSON.stringify([...watchlist])); } catch(e) {}
+  updateWatchlistBanner();
+  updateArtistAlertBanner();
+  if (currentView === 'myartists') renderMyArtistsView();
+  if (currentView === 'list') renderListView();
+  // Push merged state back so the gist holds the union
+  pushToGist();
+}
+
+function openSyncModal() {
+  document.getElementById('syncPatInput').value = gistConfig.pat;
+  document.getElementById('syncGistInput').value = gistConfig.gistId;
+  setSyncStatus(_syncStatus);
+  document.getElementById('syncModal').classList.add('open');
+}
+function closeSyncModal() { document.getElementById('syncModal').classList.remove('open'); }
+
+async function saveSyncSettings() {
+  var pat = document.getElementById('syncPatInput').value.trim();
+  var gid = document.getElementById('syncGistInput').value.trim();
+  gistConfig.pat = pat;
+  gistConfig.gistId = gid;
+  try { localStorage.setItem('la_gist_pat', pat); } catch(e) {}
+  try { localStorage.setItem('la_gist_id', gid); } catch(e) {}
+  closeSyncModal();
+  if (gistConfigured()) await initialGistSync();
+  else setSyncStatus('idle');
+}
+
+async function createNewGist() {
+  var pat = document.getElementById('syncPatInput').value.trim();
+  if (!pat) { alert('Paste a Personal Access Token first.'); return; }
+  setSyncStatus('syncing');
+  var payload = {
+    schemaVersion: 1,
+    updatedAt: new Date().toISOString(),
+    watchlist: [...watchlist],
+    trackedArtists: trackedArtists
+  };
+  var body = {
+    description: 'LA Concert Tracker — watchlist sync',
+    public: false,
+    files: {}
+  };
+  body.files[GIST_FILENAME] = { content: JSON.stringify(payload, null, 2) };
+  try {
+    var res = await fetch('https://api.github.com/gists', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'token ' + pat,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) { setSyncStatus('error', 'Create HTTP ' + res.status); alert('Failed to create gist: HTTP ' + res.status + '. Check the PAT scope is "gist".'); return; }
+    var data = await res.json();
+    document.getElementById('syncGistInput').value = data.id;
+    setSyncStatus('synced');
+    alert('Gist created. Click Save to lock it in.');
+  } catch(e) { setSyncStatus('error', 'Network'); alert('Network error.'); }
+}
+
+async function forcePushToGist() {
+  if (!gistConfigured()) { alert('Save settings first.'); return; }
+  await pushToGist();
+}
+async function forcePullFromGist() {
+  if (!gistConfigured()) { alert('Save settings first.'); return; }
+  await initialGistSync();
+}
+function disconnectSync() {
+  gistConfig = { pat: '', gistId: '' };
+  try { localStorage.removeItem('la_gist_pat'); } catch(e) {}
+  try { localStorage.removeItem('la_gist_id'); } catch(e) {}
+  document.getElementById('syncPatInput').value = '';
+  document.getElementById('syncGistInput').value = '';
+  setSyncStatus('idle');
+  closeSyncModal();
+}
 
 
 function generateGCalUrl(ev) {
@@ -2228,6 +2559,9 @@ function renderUpcomingDrops() {
 }
 
 renderFilterChips();renderLegend();applyFilters();updateWatchlistBanner();updateArtistAlertBanner();renderUpcomingDrops();updateStickyOffsets();
+// Initialize sync indicator + kick off async gist fetch (non-blocking)
+setSyncStatus(_syncStatus);
+initialGistSync();
 </script>
 </body>
 </html>

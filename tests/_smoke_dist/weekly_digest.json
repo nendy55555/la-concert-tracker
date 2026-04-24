@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-20T22:42:54-07:00",
+  "generated_at": "2026-04-24T15:35:25-07:00",
   "as_of": "2026-04-20",
   "horizon_days": 300,
   "onsale_days": 14,
@@ -177,11 +177,14 @@
     "AJ Tracey": [],
     "Zuan": [],
     "ATRIP": [],
-    "Skrillex": []
+    "Skrillex": [],
+    "Moby": [],
+    "Hugel": [],
+    "Cloonee": []
   },
   "totals": {
     "concerts": 399,
-    "watchlist_artists": 37,
+    "watchlist_artists": 40,
     "watch_hits": 5,
     "onsale_hits": 0,
     "artists_with_shows": 4
