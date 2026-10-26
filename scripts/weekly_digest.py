@@ -96,7 +96,9 @@ def _js_array_to_python(js: str) -> list:
     is NOT treated as a comment, and so single-quote string bodies are
     re-escaped correctly for JSON.
     """
-    out: list[str] = []
+    # Each entry is ("s", string-literal-as-JSON) or ("c", non-string text); the
+    # post-passes below run on the "c" segments only.
+    out: list[tuple[str, str]] = []
     i = 0
     n = len(js)
     while i < n:
@@ -111,7 +113,7 @@ def _js_array_to_python(js: str) -> list:
                 if js[j] == '"':
                     break
                 j += 1
-            out.append(js[i : j + 1])
+            out.append(("s", js[i : j + 1]))
             i = j + 1
             continue
         # Single-quoted string — convert to JSON double-quoted
@@ -147,7 +149,7 @@ def _js_array_to_python(js: str) -> list:
                 else:
                     body.append(c)
                 j += 1
-            out.append('"' + "".join(body) + '"')
+            out.append(("s", '"' + "".join(body) + '"'))
             i = j + 1
             continue
         # Line comment `//…\n` (only outside strings)
@@ -165,19 +167,34 @@ def _js_array_to_python(js: str) -> list:
                 raise ValueError("unterminated block comment")
             i = j + 2
             continue
-        out.append(ch)
+        out.append(("c", ch))
         i += 1
-    cleaned = "".join(out)
 
-    # Quote unquoted object keys: `key:` → `"key":` (only after `{` or `,`).
-    cleaned = re.sub(r"([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)\s*:", r'\1"\2":', cleaned)
-    # Drop trailing commas before ] or }
-    cleaned = re.sub(r",(\s*[}\]])", r"\1", cleaned)
-    # Smart quotes → straight (occasional stragglers)
-    cleaned = cleaned.translate(
-        str.maketrans({"\u2019": "'", "\u2018": "'", "\u201c": '"', "\u201d": '"'})
-    )
-    return json.loads(cleaned)
+    # Post-passes run on NON-STRING segments only. A string literal (already JSON
+    # double-quoted at this point) is passed through untouched, so a name such as
+    # 'Dawes, Live: An Evening' can never be mistaken for an object key, and curly
+    # quotes inside a name are never turned into raw double quotes.
+    def _fix(segment: str) -> str:
+        # Quote unquoted object keys: `key:` → `"key":` (only after `{` or `,`).
+        segment = re.sub(r"([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)\s*:", r'\1"\2":', segment)
+        # Drop trailing commas before ] or }
+        segment = re.sub(r",(\s*[}\]])", r"\1", segment)
+        # Smart quotes → straight (occasional stragglers)
+        return segment.translate(
+            str.maketrans({"\u2019": "'", "\u2018": "'", "\u201c": '"', "\u201d": '"'})
+        )
+
+    pieces: list[str] = []
+    buf: list[str] = []
+    for kind, text in out:
+        if kind == "s":
+            pieces.append(_fix("".join(buf)))
+            buf = []
+            pieces.append(text)
+        else:
+            buf.append(text)
+    pieces.append(_fix("".join(buf)))
+    return json.loads("".join(pieces))
 
 
 def load_data(index_path: Path) -> tuple[list[dict], list[str]]:
