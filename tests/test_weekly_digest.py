@@ -471,5 +471,87 @@ class TestMatcherPrecision(unittest.TestCase):
         self.assertEqual(d["totals"]["artists_with_shows"], 2)
 
 
+TIERS = {"Kia Forum": 3, "SoFi Stadium": 4, "The Wiltern": 2, "Troubadour": 1, "Academy LA": 2}
+
+
+def feed_row(date_, name, venue, first_seen, on_sale="", artists=None):
+    return {"date": date_, "name": name, "venue": venue, "genre": "Rock", "support": "",
+            "spotifyMonthlyListeners": 0, "ticketUrl": "", "ticketVendor": "", "onSaleDate": on_sale,
+            "presaleDate": "", "tmId": name.replace(" ", ""), "artists": artists if artists is not None else [name],
+            "firstSeen": first_seen}
+
+
+class TestNewSinceAndFeedLine(unittest.TestCase):
+    TODAY = date(2026, 10, 26)
+    COVERED = "2026-10-19T09:05:00-07:00"
+    STATE = {"last_success_at": "2026-10-25T09:05:00-07:00", "last_attempt_at": "2026-10-25T09:05:00-07:00",
+             "last_attempt_status": "ok", "future_rows": 212, "failed_venues": [],
+             "last_digest_at": "2026-10-19T09:10:00-07:00", "last_digest_covered_through": COVERED,
+             "last_tests_status": "ok", "last_push_status": "ok", "last_refresh_rc": "0"}
+
+    def rows(self):
+        return [
+            feed_row("2026-12-01", "Flume", "Kia Forum", "2026-10-20T09:05:00-07:00"),                 # watchlist, new
+            feed_row("2026-12-03", "Big Arena Act", "SoFi Stadium", "2026-10-23T09:05:00-07:00"),      # tier 4, new, not watchlist
+            feed_row("2026-12-05", "Jungle", "The Wiltern", "2026-10-10T09:05:00-07:00"),               # watchlist, old
+            feed_row("2026-12-07", "Small Club Act", "Troubadour", "2026-10-24T09:05:00-07:00"),       # tier 1, new, not notable
+            feed_row("2026-12-09", "Same Day Later", "Kia Forum", "2026-10-19T15:30:00-07:00"),        # refreshed by hand after last digest: new
+            feed_row("2027-01-10", "Odesza", "Kia Forum", "2026-09-01T09:05:00-07:00", on_sale="2026-10-22T10:00"),  # new on-sale
+            feed_row("2027-01-12", "Moby", "The Wiltern", "2026-09-01T09:05:00-07:00", on_sale="2026-10-01T10:00"),  # old on-sale
+        ]
+
+    def digest(self, state, rows=None):
+        return wd.build_digest(rows if rows is not None else self.rows(), ["Flume", "Jungle", "Odesza", "Moby"],
+                               self.TODAY, 180, 14, state=state, tiers=TIERS)
+
+    def test_e21_new_since_lists_new_rows_watchlist_first(self):
+        d = self.digest(self.STATE)
+        names = [s["name"] for s in d["new_since"]["shows"]]
+        self.assertEqual(names, ["Flume", "Big Arena Act", "Same Day Later"])
+        text = wd.render_text(d)
+        self.assertIn("── NEW SINCE Oct 19 ──", text)
+        self.assertNotIn("Small Club Act", text.split("── WATCHLIST")[0])
+
+    def test_e22_new_onsales(self):
+        d = self.digest(self.STATE)
+        self.assertEqual([s["name"] for s in d["new_since"]["onsales"]], ["Odesza"])
+
+    def test_e23_section_omitted_when_empty(self):
+        rows = [feed_row("2026-12-05", "Jungle", "The Wiltern", "2026-10-10T09:05:00-07:00")]
+        text = wd.render_text(self.digest(self.STATE, rows))
+        self.assertNotIn("NEW SINCE", text)
+
+    def test_e24_feed_line(self):
+        d = self.digest(self.STATE)
+        self.assertEqual(d["feed"]["age_days"], 1)
+        self.assertIn("Data refreshed 1 day ago", d["feed"]["line"])
+        stale = dict(self.STATE, last_success_at="2026-10-16T09:05:00-07:00", last_attempt_at="2026-10-16T09:05:00-07:00")
+        self.assertIn("STALE", self.digest(stale)["feed"]["line"])
+        failed = dict(self.STATE, last_attempt_at="2026-10-26T09:05:00-07:00", last_attempt_status="all_failed")
+        self.assertIn("last refresh attempt failed", self.digest(failed)["feed"]["line"])
+        partial = dict(self.STATE, failed_venues=["The Fonda Theatre (fetch)", "Kia Forum (zero_rows)"])
+        self.assertIn("The Fonda Theatre (fetch)", self.digest(partial)["feed"]["line"])
+        tests_failed = dict(self.STATE, last_tests_status="tests_failed")
+        self.assertIn("tests failed", self.digest(tests_failed)["feed"]["line"])
+        push_failed = dict(self.STATE, last_push_status="failed")
+        self.assertIn("site push failed", self.digest(push_failed)["feed"]["line"])
+        crashed = dict(self.STATE, last_refresh_rc="1")
+        self.assertIn("refresh exited 1", self.digest(crashed)["feed"]["line"])
+        no_attempt = dict(self.STATE, last_attempt_at="2026-10-18T09:05:00-07:00", last_success_at="2026-10-18T09:05:00-07:00")
+        self.assertIn("no refresh attempt in the last 2 days", self.digest(no_attempt)["feed"]["line"])
+        text = wd.render_text(d)
+        self.assertEqual(text.splitlines()[3].strip(), d["feed"]["line"])  # first line under the title block
+
+    def test_e25_bootstrap_and_missing_state(self):
+        boot = {k: v for k, v in self.STATE.items() if k != "last_digest_covered_through"}
+        d = self.digest(boot)
+        self.assertIsNone(d["new_since"])
+        self.assertIn("Feed connected", d["feed"]["line"])
+        d2 = self.digest(None)
+        self.assertIn("refresh state missing", d2["feed"]["line"])
+        self.assertIsNone(d2["new_since"])
+        wd.render_text(d2); wd.render_html(d2)  # must not raise
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

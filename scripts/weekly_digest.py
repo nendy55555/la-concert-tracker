@@ -47,6 +47,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 TZ = ZoneInfo("America/Los_Angeles")
+ROOT = Path(__file__).resolve().parent.parent
 TRACKER_URL = "https://nendy55555.github.io/la-concert-tracker/"
 
 
@@ -325,12 +326,76 @@ class OnSaleHit:
     is_watched: bool
 
 
+STALE_AFTER_DAYS = 10
+NOTABLE_TIER_MIN = 3
+NEW_SHOWS_CAP = 15
+
+
+def load_refresh_state(path: Path) -> dict | None:
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8") or "{}")
+    except json.JSONDecodeError:
+        return None
+
+
+def load_venue_tiers(path: Path) -> dict[str, int]:
+    try:
+        return {v["name"]: int(v["tier"]) for v in json.loads(path.read_text(encoding="utf-8"))}
+    except (OSError, ValueError, KeyError):
+        return {}
+
+
+def _feed_status(state: dict | None, today: date) -> dict:
+    if state is None:
+        return {"status": "missing", "age_days": None,
+                "line": "Data refresh state missing: this digest ran on whatever index.html holds."}
+    ok_at = state.get("last_success_at")
+    if not ok_at:
+        return {"status": "failed", "age_days": None,
+                "line": "No successful data refresh recorded yet; last refresh attempt failed "
+                        f"({state.get('last_attempt_status', 'unknown')})."}
+    age = (today - datetime.fromisoformat(ok_at).date()).days
+    rows = state.get("future_rows")
+    rows_txt = f" ({rows} upcoming shows)" if rows is not None else ""
+    if age >= STALE_AFTER_DAYS:
+        status, line = "stale", f"STALE: data refreshed {age} days ago{rows_txt}."
+    else:
+        unit = "day" if age == 1 else "days"
+        status, line = "ok", f"Data refreshed {age} {unit} ago{rows_txt}."
+    notes = []
+    if state.get("last_attempt_status", "ok") != "ok":
+        notes.append(f"last refresh attempt failed ({state.get('last_attempt_status')})")
+    if str(state.get("last_refresh_rc", "0")) != "0":
+        notes.append(f"refresh exited {state['last_refresh_rc']} without recording a result")
+    attempt_at = state.get("last_attempt_at")
+    if attempt_at and (today - datetime.fromisoformat(attempt_at).date()).days > 2:
+        notes.append("no refresh attempt in the last 2 days")
+    if state.get("failed_venues"):
+        notes.append("venues not refreshed: " + ", ".join(state["failed_venues"]))
+    if state.get("last_tests_status", "ok") != "ok":
+        notes.append("tests failed after the last refresh, data rolled back to the previous week")
+    if state.get("last_push_status", "ok") not in ("ok", "skipped"):
+        notes.append("site push failed, the web page may be behind this email")
+    if notes:
+        status = "failed"
+        line += " Note: " + "; ".join(notes) + "."
+    if not state.get("last_digest_covered_through"):
+        status = "bootstrap"
+        loaded = f"{rows} upcoming shows loaded" if rows is not None else "upcoming shows loaded"
+        line += f" Feed connected {ok_at[:10]}: {loaded}."
+    return {"status": status, "age_days": age, "line": line}
+
+
 def build_digest(
     concerts: list[dict],
     wishlist: list[str],
     today: date,
     horizon_days: int,
     onsale_days: int,
+    state: dict | None = None,
+    tiers: dict[str, int] | None = None,
 ) -> dict:
     watchlist_norm = [normalize_for_match(a) for a in wishlist]
     horizon_end = today + timedelta(days=horizon_days)
@@ -414,9 +479,41 @@ def build_digest(
         credited.add(k)
         per_artist.setdefault(h.watchlist_artist, []).append(h)
 
+    feed = _feed_status(state, today)
+    new_since = None
+    since = (state or {}).get("last_digest_covered_through")  # ISO timestamp of the refresh the last digest showed
+    if since:
+        tiers = tiers or {}
+        shows, onsales = [], []
+        for c in concerts:
+            try:
+                d = date.fromisoformat(c["date"])
+            except (KeyError, ValueError):
+                continue
+            if d < today:
+                continue
+            watched = is_watched_artist(c.get("name", ""), watchlist_norm, artists=c.get("artists"))
+            entry = {"date": c["date"], "name": c.get("name", ""), "venue": c.get("venue", ""),
+                     "support": c.get("support", ""), "ticket_url": c.get("ticketUrl", ""),
+                     "on_sale_date": c.get("onSaleDate", ""), "presale_date": c.get("presaleDate", ""),
+                     "watched": watched}
+            fs = c.get("firstSeen") or ""
+            if fs > since and (watched or tiers.get(entry["venue"], 0) >= NOTABLE_TIER_MIN):
+                shows.append(entry)
+            os_dt = parse_sale_date(c.get("onSaleDate", ""))
+            if os_dt and since[:10] < os_dt.date().isoformat() <= today.isoformat():
+                onsales.append(entry)
+        key = lambda e: (not e["watched"], e["date"], e["name"].lower())
+        shows.sort(key=key)
+        onsales.sort(key=key)
+        shows = [s for s in shows if s["watched"]] + [s for s in shows if not s["watched"]][:NEW_SHOWS_CAP]
+        new_since = {"since": since, "shows": shows, "onsales": onsales}
+
     return {
         "generated_at": datetime.now(TZ).isoformat(timespec="seconds"),
         "as_of": today.isoformat(),
+        "feed": feed,
+        "new_since": new_since,
         "horizon_days": horizon_days,
         "onsale_days": onsale_days,
         "watch_hits": [asdict(h) for h in dedup_watch],
@@ -457,6 +554,8 @@ def render_text(digest: dict) -> str:
     out.append(f"LA Concert Weekly — {digest['as_of']}")
     out.append("=" * 60)
     out.append("")
+    out.append(digest["feed"]["line"])
+    out.append("")
     out.append(
         f"{digest['totals']['watch_hits']} watchlist shows in the next "
         f"{digest['horizon_days']} days · "
@@ -466,6 +565,17 @@ def render_text(digest: dict) -> str:
     out.append("")
     out.append(f"Full tracker: {TRACKER_URL}")
     out.append("")
+
+    ns = digest.get("new_since")
+    if ns and (ns["shows"] or ns["onsales"]):
+        since_label = date.fromisoformat(ns["since"][:10]).strftime("%b %-d")  # 'Oct 19'
+        out.append(f"── NEW SINCE {since_label} ──")
+        for s in ns["shows"]:
+            tag = "★ " if s["watched"] else "  "
+            out.append(f"  {tag}{_fmt_date(s['date'])} — {s['name']} @ {s['venue']}")
+        for s in ns["onsales"]:
+            out.append(f"  {'★ ' if s['watched'] else '  '}ON SALE {_fmt_sale(s['on_sale_date'])}: {s['name']} @ {s['venue']} ({_fmt_date(s['date'])})")
+        out.append("")
 
     out.append("── WATCHLIST — upcoming LA shows ──")
     if not digest["watch_hits"]:
@@ -526,6 +636,8 @@ def render_html(digest: dict) -> str:
       .roster { font-size: 13px; color: #555; line-height: 1.6; }
       .roster b { color: #111; }
     """
+    feed_style = (" style='color:#b00020;font-weight:600'"
+                  if digest["feed"]["status"] in ("stale", "failed") else "")
     parts = [
         "<!DOCTYPE html><html><head><meta charset='utf-8'><style>",
         css,
@@ -534,12 +646,33 @@ def render_html(digest: dict) -> str:
         f"<div class='sub'>As of {escape(digest['as_of'])} · "
         f"{digest['totals']['watch_hits']} watchlist shows in the next {digest['horizon_days']} days · "
         f"{digest['totals']['onsale_hits']} on-sale drops in the next {digest['onsale_days']} days</div>",
+        f"<div class='feed'{feed_style}>{escape(digest['feed']['line'])}</div>",
         f"<div style='margin: 12px 0 20px; padding: 10px 14px; background: #f4faff; "
         f"border-left: 3px solid #0096d1; border-radius: 3px; font-size: 14px;'>"
         f"<a href='{escape(TRACKER_URL)}' style='color: #0077b6; font-weight: 600; text-decoration: none;'>"
         f"View the full LA Concert Tracker →</a>"
         f"</div>",
     ]
+
+    ns = digest.get("new_since")
+    if ns and (ns["shows"] or ns["onsales"]):
+        since_label = date.fromisoformat(ns["since"][:10]).strftime("%b %-d")
+        parts.append(f"<h2>New since {escape(since_label)}</h2>")
+        for s in ns["shows"]:
+            pill = "<span class='pill pill-watched'>★</span> " if s["watched"] else ""
+            nm = f"<a href='{escape(s['ticket_url'])}'>{escape(s['name'])}</a>" if s["ticket_url"] else escape(s["name"])
+            parts.append(
+                f"<div class='row'>{pill}<span class='name'>{nm}</span> "
+                f"<span class='meta'>· {escape(_fmt_date(s['date']))} · {escape(s['venue'])}</span></div>"
+            )
+        for s in ns["onsales"]:
+            pill = "<span class='pill pill-watched'>★</span> " if s["watched"] else ""
+            nm = f"<a href='{escape(s['ticket_url'])}'>{escape(s['name'])}</a>" if s["ticket_url"] else escape(s["name"])
+            parts.append(
+                f"<div class='row'><span class='pill pill-onsale'>ON SALE</span> {pill}"
+                f"<b>{escape(_fmt_sale(s['on_sale_date']))}</b> "
+                f"<span class='meta'>· {nm} @ {escape(s['venue'])} on {escape(_fmt_date(s['date']))}</span></div>"
+            )
 
     parts.append("<h2>Watchlist — upcoming LA shows</h2>")
     if not digest["watch_hits"]:
@@ -709,6 +842,10 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Override recipient. Defaults to EMAIL_TO env var, then GMAIL_SENDER.",
     )
+    p.add_argument("--state", default=str(ROOT / "data" / "refresh_state.json"),
+                   help="Path to refresh_state.json (default: data/refresh_state.json)")
+    p.add_argument("--venues", default=str(ROOT / "scripts" / "venues.json"),
+                   help="Path to venues.json (default: scripts/venues.json)")
     args = p.parse_args(argv)
 
     index_path = Path(args.index).resolve()
@@ -718,7 +855,11 @@ def main(argv: list[str] | None = None) -> int:
 
     concerts, wishlist = load_data(index_path)
     today = today_local(args.as_of)
-    digest = build_digest(concerts, wishlist, today, args.horizon_days, args.onsale_days)
+    state_path = Path(args.state)
+    state = load_refresh_state(state_path)
+    tiers = load_venue_tiers(Path(args.venues))
+    digest = build_digest(concerts, wishlist, today, args.horizon_days, args.onsale_days,
+                          state=state, tiers=tiers)
 
     out_dir = Path(args.out_dir) if args.out_dir else index_path.parent / "dist"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -752,6 +893,11 @@ def main(argv: list[str] | None = None) -> int:
             print(f"ERROR: SMTP send failed: {e}", file=sys.stderr)
             return 4
         email_status = {"sent": True, "to": recipients, "from": sender}
+        st = load_refresh_state(state_path) or {}
+        st["last_digest_at"] = datetime.now(TZ).isoformat(timespec="seconds")
+        st["last_digest_covered_through"] = st.get("last_success_at", "")
+        state_path.parent.mkdir(parents=True, exist_ok=True)
+        state_path.write_text(json.dumps(st, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
     if args.html:
         print(html_body)
