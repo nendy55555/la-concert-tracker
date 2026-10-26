@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>LA Concerts 2026</title>
+  <title>LA Concerts</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1315,7 +1315,7 @@
   </button>
   <div class="header-top">
     <h1>LA Concerts</h1>
-    <span class="header-year">2026</span>
+    <span class="header-year" id="headerYear">2026</span>
   </div>
   <div class="subtitle">Hollywood Bowl / Greek Theatre / Kia Forum / Crypto.com Arena / SoFi Stadium + more</div>
   <div class="last-updated">Data refreshed: March 31, 2026 &bull; 399 shows across 19 venues</div>
@@ -1983,7 +1983,8 @@ function getPriceLabel(ev) {
   return p ? p.label : '';
 }
 
-let currentMonth = 3, currentYear = 2026, currentView = 'calendar';
+var _today = new Date();
+let currentMonth = _today.getMonth(), currentYear = _today.getFullYear(), currentView = 'calendar';
 let hidePast = true;
 function toggleHidePast() { hidePast = document.getElementById('hidePastCheck').checked; applyFilters(); }
 function isPastDate(dateStr) { return dateStr < new Date().toISOString().slice(0,10); }
@@ -2458,6 +2459,7 @@ function updateArtistAlertBanner(){
 }
 
 function renderCalendar(){
+  var hy=document.getElementById('headerYear'); if(hy) hy.textContent=currentYear;
   document.getElementById('monthLabel').textContent=MONTHS[currentMonth]+' '+currentYear;
   var grid=document.getElementById('calGrid'),firstDay=new Date(currentYear,currentMonth,1).getDay(),dim=new Date(currentYear,currentMonth+1,0).getDate();
   var today=new Date(),ts=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0'),html='';
@@ -2478,8 +2480,8 @@ function renderCalendar(){
 
 function renderMonthDots(){var h='';for(var m=0;m<12;m++){var has=filteredConcerts.some(function(c){var d=new Date(c.date);return d.getMonth()===m&&d.getFullYear()===currentYear;});h+='<div class="month-dot'+(m===currentMonth?' active':'')+(has?' has-events':'')+'" title="'+MONTHS[m]+'" onclick="goToMonth('+m+')"></div>';}document.getElementById('monthDots').innerHTML=h;}
 function goToMonth(m){currentMonth=m;renderCalendar();}
-function prevMonth(){if(currentMonth>0){currentMonth--;renderCalendar();}}
-function nextMonth(){if(currentMonth<11){currentMonth++;renderCalendar();}}
+function prevMonth(){ if(currentMonth===0){currentMonth=11;currentYear--;} else {currentMonth--;} renderCalendar(); }
+function nextMonth(){ if(currentMonth===11){currentMonth=0;currentYear++;} else {currentMonth++;} renderCalendar(); }
 
 function openModal(ds){
   var de=filteredConcerts.filter(function(c){return c.date===ds;}).sort(concertSort);
