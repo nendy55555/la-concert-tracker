@@ -1,9 +1,11 @@
 {
   "failed_venues": [],
   "future_rows": 443,
-  "last_attempt_at": "2026-10-25T21:31:44-07:00",
+  "last_attempt_at": "2026-10-25T21:33:16-07:00",
   "last_attempt_status": "ok",
-  "last_success_at": "2026-10-25T21:31:44-07:00",
+  "last_refresh_rc": "0",
+  "last_success_at": "2026-10-25T21:33:16-07:00",
+  "last_tests_status": "ok",
   "per_venue": {
     "Academy LA": 21,
     "Crypto.com Arena": 8,
