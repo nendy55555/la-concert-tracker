@@ -310,5 +310,140 @@ class TestPipeline(unittest.TestCase):
         )
 
 
+# ─── Email tests (mocked SMTP) ──────────────────────────────────────────────
+
+
+class _MockSMTP:
+    """Minimal SMTP stand-in for testing send_via_smtp without network."""
+
+    instances: list["_MockSMTP"] = []
+
+    def __init__(self, host, port):
+        self.host = host
+        self.port = port
+        self.logged_in_as = None
+        self.sent_messages = []
+        _MockSMTP.instances.append(self)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+    def login(self, user, password):
+        self.logged_in_as = (user, password)
+
+    def send_message(self, msg):
+        self.sent_messages.append(msg)
+
+
+class TestEmail(unittest.TestCase):
+    def setUp(self):
+        _MockSMTP.instances = []
+
+    def test_build_email_message_has_html_and_text(self):
+        msg = wd.build_email_message(
+            "from@example.com",
+            "to@example.com",
+            "Subject Line",
+            "<p>Hi</p>",
+            "Hi",
+        )
+        self.assertEqual(msg["From"], "from@example.com")
+        self.assertEqual(msg["To"], "to@example.com")
+        self.assertEqual(msg["Subject"], "Subject Line")
+        self.assertTrue(msg.is_multipart())
+        parts = list(msg.iter_parts())
+        types = sorted(p.get_content_type() for p in parts)
+        self.assertEqual(types, ["text/html", "text/plain"])
+
+    def test_send_via_smtp_uses_factory(self):
+        msg = wd.build_email_message("a@b.com", "c@d.com", "S", "<i>x</i>", "x")
+        wd.send_via_smtp(
+            msg,
+            sender="a@b.com",
+            app_password="abcd1234",
+            smtp_factory=_MockSMTP,
+        )
+        self.assertEqual(len(_MockSMTP.instances), 1)
+        smtp = _MockSMTP.instances[0]
+        self.assertEqual(smtp.host, "smtp.gmail.com")
+        self.assertEqual(smtp.port, 465)
+        self.assertEqual(smtp.logged_in_as, ("a@b.com", "abcd1234"))
+        self.assertEqual(len(smtp.sent_messages), 1)
+        self.assertEqual(smtp.sent_messages[0]["Subject"], "S")
+
+    def test_load_env_file_parses_basic_kv(self):
+        import os
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as td:
+            env_path = Path(td) / ".env"
+            env_path.write_text(
+                "# comment\n"
+                "FOO=bar\n"
+                'QUOTED="hello world"\n'
+                "BLANK=\n"
+                "\n",
+                encoding="utf-8",
+            )
+            # Clear any leftovers
+            for k in ("FOO", "QUOTED", "BLANK"):
+                os.environ.pop(k, None)
+            wd.load_env_file(env_path)
+            self.assertEqual(os.environ.get("FOO"), "bar")
+            self.assertEqual(os.environ.get("QUOTED"), "hello world")
+            # Cleanup
+            for k in ("FOO", "QUOTED", "BLANK"):
+                os.environ.pop(k, None)
+
+    def test_load_env_file_does_not_overwrite(self):
+        import os
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as td:
+            env_path = Path(td) / ".env"
+            env_path.write_text("ALREADY_SET=fromfile\n", encoding="utf-8")
+            os.environ["ALREADY_SET"] = "fromenv"
+            wd.load_env_file(env_path)
+            self.assertEqual(os.environ.get("ALREADY_SET"), "fromenv")
+            os.environ.pop("ALREADY_SET", None)
+
+    def test_main_email_flag_missing_creds_returns_4(self):
+        import os
+
+        # Ensure no .env interference: write fixture and point at a temp out dir.
+        fx = FIXTURE_DIR / "mini_index.html"
+        fx.parent.mkdir(parents=True, exist_ok=True)
+        fx.write_text(MINI_INDEX_HTML, encoding="utf-8")
+        # Strip env vars so the missing-creds branch fires.
+        saved = {
+            k: os.environ.pop(k, None)
+            for k in ("GMAIL_SENDER", "GMAIL_APP_PASSWORD", "EMAIL_TO")
+        }
+        try:
+            rc = wd.main(
+                [
+                    "--index",
+                    str(fx),
+                    "--as-of",
+                    "2026-04-20",
+                    "--horizon-days",
+                    "30",
+                    "--onsale-days",
+                    "14",
+                    "--out-dir",
+                    str(FIXTURE_DIR / "_email_dist"),
+                    "--email",
+                ]
+            )
+            self.assertEqual(rc, 4)
+        finally:
+            for k, v in saved.items():
+                if v is not None:
+                    os.environ[k] = v
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

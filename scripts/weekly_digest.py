@@ -6,7 +6,9 @@ Reads CONCERTS and WISHLIST_ARTISTS out of ../index.html, filters to upcoming
 watchlist matches + near-term on-sale drops, renders an HTML email body plus a
 plain-text fallback, and writes a small JSON summary to stdout.
 
-Zero network calls. Zero pip dependencies. Python 3.11+ stdlib only.
+Zero pip dependencies. Python 3.11+ stdlib only.
+
+Network is only touched when `--email` is passed (Gmail SMTP).
 
 Usage:
     python3 scripts/weekly_digest.py                         # stdout JSON, writes dist/
@@ -15,27 +17,37 @@ Usage:
     python3 scripts/weekly_digest.py --index path/to.html    # custom index.html path
     python3 scripts/weekly_digest.py --horizon-days 30       # shows within N days (default 30)
     python3 scripts/weekly_digest.py --onsale-days 14        # on-sales within N days (default 14)
+    python3 scripts/weekly_digest.py --email                 # also send via Gmail SMTP
+
+Email mode requires GMAIL_SENDER and GMAIL_APP_PASSWORD in the environment
+(or in a .env file in the project root). EMAIL_TO defaults to GMAIL_SENDER.
 
 Exit codes:
     0 success
     1 index.html not found or unparseable
     2 CONCERTS array could not be located/parsed
     3 WISHLIST_ARTISTS array could not be located/parsed
+    4 SMTP send failed (only when --email)
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
+import smtplib
+import ssl
 import sys
 from dataclasses import asdict, dataclass
 from datetime import date, datetime, timedelta, timezone
+from email.message import EmailMessage
 from html import escape
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 TZ = ZoneInfo("America/Los_Angeles")
+TRACKER_URL = "https://nendy55555.github.io/la-concert-tracker/"
 
 
 # ─── 1. Parsing CONCERTS / WISHLIST_ARTISTS out of index.html ────────────────
@@ -429,6 +441,8 @@ def render_text(digest: dict) -> str:
         f"{digest['onsale_days']} days"
     )
     out.append("")
+    out.append(f"Full tracker: {TRACKER_URL}")
+    out.append("")
 
     out.append("── WATCHLIST — upcoming LA shows ──")
     if not digest["watch_hits"]:
@@ -497,6 +511,11 @@ def render_html(digest: dict) -> str:
         f"<div class='sub'>As of {escape(digest['as_of'])} · "
         f"{digest['totals']['watch_hits']} watchlist shows in the next {digest['horizon_days']} days · "
         f"{digest['totals']['onsale_hits']} on-sale drops in the next {digest['onsale_days']} days</div>",
+        f"<div style='margin: 12px 0 20px; padding: 10px 14px; background: #f4faff; "
+        f"border-left: 3px solid #0096d1; border-radius: 3px; font-size: 14px;'>"
+        f"<a href='{escape(TRACKER_URL)}' style='color: #0077b6; font-weight: 600; text-decoration: none;'>"
+        f"View the full LA Concert Tracker →</a>"
+        f"</div>",
     ]
 
     parts.append("<h2>Watchlist — upcoming LA shows</h2>")
@@ -560,7 +579,88 @@ def render_html(digest: dict) -> str:
     return "".join(parts)
 
 
-# ─── 6. CLI ──────────────────────────────────────────────────────────────────
+# ─── 6. Email delivery (Gmail SMTP) ──────────────────────────────────────────
+
+
+def load_env_file(path: Path) -> None:
+    """
+    Minimal .env loader: KEY=VALUE per line, # comments, optional quotes.
+    Does not overwrite already-set environment variables.
+    """
+    if not path.exists():
+        return
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" not in line:
+            continue
+        key, _, val = line.partition("=")
+        key = key.strip()
+        val = val.strip()
+        if (val.startswith('"') and val.endswith('"')) or (
+            val.startswith("'") and val.endswith("'")
+        ):
+            val = val[1:-1]
+        if key and key not in os.environ:
+            os.environ[key] = val
+
+
+def build_email_message(
+    sender: str,
+    recipient: str | list[str],
+    subject: str,
+    html_body: str,
+    text_body: str,
+) -> EmailMessage:
+    msg = EmailMessage()
+    msg["From"] = sender
+    if isinstance(recipient, list):
+        msg["To"] = ", ".join(recipient)
+    else:
+        msg["To"] = recipient
+    msg["Subject"] = subject
+    msg.set_content(text_body)
+    msg.add_alternative(html_body, subtype="html")
+    return msg
+
+
+def parse_recipients(raw: str) -> list[str]:
+    """Split a comma/semicolon-separated address string into a clean list."""
+    if not raw:
+        return []
+    out = []
+    for chunk in re.split(r"[,;]", raw):
+        addr = chunk.strip()
+        if addr:
+            out.append(addr)
+    return out
+
+
+def send_via_smtp(
+    msg: EmailMessage,
+    sender: str,
+    app_password: str,
+    host: str = "smtp.gmail.com",
+    port: int = 465,
+    smtp_factory=None,
+) -> None:
+    """
+    Send `msg` through Gmail SMTP over SSL. Pass `smtp_factory` (a callable
+    returning an SMTP-like object) for tests.
+    """
+    if smtp_factory is None:
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(host, port, context=context, timeout=30) as smtp:
+            smtp.login(sender, app_password)
+            smtp.send_message(msg)
+    else:
+        with smtp_factory(host, port) as smtp:
+            smtp.login(sender, app_password)
+            smtp.send_message(msg)
+
+
+# ─── 7. CLI ──────────────────────────────────────────────────────────────────
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -576,33 +676,75 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--html", action="store_true", help="Print the HTML body to stdout instead of JSON")
     p.add_argument("--text", action="store_true", help="Print the plain-text body to stdout instead of JSON")
     p.add_argument("--out-dir", default=None, help="Write dist/ outputs (default: ../dist relative to script)")
+    p.add_argument(
+        "--email",
+        action="store_true",
+        help="Send the digest via Gmail SMTP. Requires GMAIL_SENDER + GMAIL_APP_PASSWORD env vars (or .env file).",
+    )
+    p.add_argument(
+        "--email-to",
+        default=None,
+        help="Override recipient. Defaults to EMAIL_TO env var, then GMAIL_SENDER.",
+    )
     args = p.parse_args(argv)
 
     index_path = Path(args.index).resolve()
+
+    # Load .env from project root (next to index.html) before reading env vars.
+    load_env_file(index_path.parent / ".env")
+
     concerts, wishlist = load_data(index_path)
     today = today_local(args.as_of)
     digest = build_digest(concerts, wishlist, today, args.horizon_days, args.onsale_days)
 
     out_dir = Path(args.out_dir) if args.out_dir else index_path.parent / "dist"
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "weekly_digest.html").write_text(render_html(digest), encoding="utf-8")
-    (out_dir / "weekly_digest.txt").write_text(render_text(digest), encoding="utf-8")
+    html_body = render_html(digest)
+    text_body = render_text(digest)
+    (out_dir / "weekly_digest.html").write_text(html_body, encoding="utf-8")
+    (out_dir / "weekly_digest.txt").write_text(text_body, encoding="utf-8")
     (out_dir / "weekly_digest.json").write_text(json.dumps(digest, indent=2), encoding="utf-8")
 
+    subject = f"🎵 LA Concert Weekly — {today.strftime('%B %-d, %Y')}"
+
+    email_status: dict | None = None
+    if args.email:
+        sender = os.environ.get("GMAIL_SENDER", "").strip()
+        app_password = os.environ.get("GMAIL_APP_PASSWORD", "").strip()
+        raw_to = (args.email_to or os.environ.get("EMAIL_TO") or sender).strip()
+        recipients = parse_recipients(raw_to) or [sender]
+        if not sender or not app_password:
+            print(
+                "ERROR: --email requires GMAIL_SENDER and GMAIL_APP_PASSWORD env vars "
+                "(or a .env file in the project root).",
+                file=sys.stderr,
+            )
+            return 4
+        # App passwords are shown with spaces in Google's UI but SMTP wants them without.
+        app_password_clean = app_password.replace(" ", "")
+        msg = build_email_message(sender, recipients, subject, html_body, text_body)
+        try:
+            send_via_smtp(msg, sender, app_password_clean)
+        except Exception as e:  # smtplib raises a variety of errors; catch all
+            print(f"ERROR: SMTP send failed: {e}", file=sys.stderr)
+            return 4
+        email_status = {"sent": True, "to": recipients, "from": sender}
+
     if args.html:
-        print(render_html(digest))
+        print(html_body)
     elif args.text:
-        print(render_text(digest))
+        print(text_body)
     else:
         # Small JSON summary designed to be pasted into the scheduled-task prompt.
         summary = {
-            "subject": f"🎵 LA Concert Weekly — {today.strftime('%B %-d, %Y')}",
+            "subject": subject,
             "totals": digest["totals"],
             "watch_hits_preview": digest["watch_hits"][:5],
             "onsale_hits_preview": digest["onsale_hits"][:5],
             "output_dir": str(out_dir),
             "html_path": str(out_dir / "weekly_digest.html"),
             "text_path": str(out_dir / "weekly_digest.txt"),
+            "email": email_status,
         }
         print(json.dumps(summary, indent=2))
     return 0

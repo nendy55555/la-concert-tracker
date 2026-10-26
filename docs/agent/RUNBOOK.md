@@ -8,13 +8,15 @@ Written for future-you with minimal or no Claude access.
 - **Data:** `CONCERTS` and `WISHLIST_ARTISTS` arrays inside `index.html`.
 - **Weekly digest:** `scripts/weekly_digest.py` (Python 3.11+ stdlib only).
 - **Tests:** `tests/` — run with `bash tests/run_all.sh`.
-- **Scheduled task:** `weekly-concert-email`, Sunday 09:03 PT. Runs the Python script and creates a Gmail draft.
+- **Scheduled task:** `weekly-concert-email`, Sunday 09:03 PT. Runs `python3 scripts/weekly_digest.py --email` (sends via Gmail SMTP). Claude does no reasoning in the send path.
+- **Credentials:** `.env` in project root with `GMAIL_SENDER` + `GMAIL_APP_PASSWORD` (gitignored). Template at `.env.example`.
 
 ## 1. Run the weekly digest manually
 
 ```bash
 cd ~/Documents/Claude/Projects/"LA Concert Tracker"
-python3 scripts/weekly_digest.py --horizon-days 180 --onsale-days 14 --text
+python3 scripts/weekly_digest.py --horizon-days 180 --onsale-days 14 --text         # preview to stdout
+python3 scripts/weekly_digest.py --horizon-days 180 --onsale-days 14 --email        # actually send via SMTP
 ```
 
 Rough time: <1s.
@@ -22,13 +24,17 @@ Rough time: <1s.
 Outputs written to `dist/`:
 - `weekly_digest.html` — the full email body
 - `weekly_digest.txt` — plain-text fallback
-- `weekly_digest.json` — structured data (use `--html` or `--text` to print to stdout instead)
+- `weekly_digest.json` — structured data + `email` field summarizing send result (when `--email`)
 
 Flags worth knowing:
 - `--as-of 2026-05-10` — simulate a specific date (testing)
 - `--horizon-days 300` — widen the watchlist window (defaults 180)
 - `--onsale-days 14` — on-sale window
+- `--email` — actually send via Gmail SMTP (reads `.env`)
+- `--email-to addr@x.com` — override recipient (defaults to `GMAIL_SENDER`)
 - `--out-dir /path` — write to a custom directory
+
+Exit codes: 0 ok · 2 parse failure · 3 render failure · 4 SMTP send failed.
 
 ## 2. Run the tests
 
@@ -72,25 +78,26 @@ Site URL: https://nendy55555.github.io/la-concert-tracker/ (unlisted — `noinde
 
 ## 5. Swap Claude tiers on the scheduled task
 
-If the Haiku-tier scheduled task starts failing (e.g. it can't reliably call `create_draft`), escalate to Sonnet:
+If the Haiku-tier scheduled task starts failing, escalate to Sonnet:
 
 1. Open the scheduled-tasks UI in Claude desktop.
 2. Edit `weekly-concert-email`.
 3. The prompt body is tier-agnostic; the model tier is set on the task itself. Select Sonnet.
 4. Click "Run now" once to confirm it works.
 
-To go back down, reverse the steps. The prompt never needs changes — it's just "run the script and call `create_draft` once."
+To go back down, reverse the steps. The prompt is just "run the script with `--email`, report exit code" — never needs editing.
 
-## 6. Gmail MCP auth
+## 6. Gmail SMTP auth
 
-If `create_draft` starts returning auth errors, the Gmail MCP token has rotated out. Fix:
+If the digest stops sending (exit code 4 / SMTP auth error), the Gmail App Password has likely rotated or been revoked. Fix:
 
-1. Open Claude desktop → Settings → Connectors.
-2. Find Gmail, click Reconnect.
-3. Grant the same scopes (read + draft).
-4. Run `weekly-concert-email` manually ("Run now") to verify.
+1. https://myaccount.google.com → Security → 2-Step Verification → App Passwords.
+2. Generate a new 16-char password (Google shows it as `xxxx xxxx xxxx xxxx` — the script strips spaces on login).
+3. Update `.env` in project root: `GMAIL_APP_PASSWORD=<new-value>`.
+4. Verify locally: `python3 scripts/weekly_digest.py --horizon-days 180 --email`.
+5. The scheduled task picks up `.env` on its next run — no prompt changes needed.
 
-No code changes required.
+Rotate every ~6 months as hygiene.
 
 ## 7. Common failures and fixes
 
@@ -104,8 +111,8 @@ No code changes required.
 **Cause #3:** the wishlist name and concert name differ too much for the fuzzy matcher. Edit `WISHLIST_ARTISTS` in `index.html` to add a better variant (e.g. add 'J Cole' in addition to 'JCole').
 
 ### Symptom: scheduled task hangs for hours
-**Cause:** `create_draft` can hang if Gmail MCP is partially degraded. The prompt has a 60s abort clause — if it hangs longer than that, the issue is in the harness, not the task.
-**Fix:** in the scheduled-task UI, cancel the run. Disable the task. Reconnect Gmail. Re-enable.
+**Cause:** rare — the send path is now stdlib SMTP with no MCP/network retries beyond Python defaults. If it hangs, it's harness-level (Claude task runner stuck), not the script.
+**Fix:** in the scheduled-task UI, cancel the run, disable the task, investigate next session. Run the script locally first to confirm it still sends — if local works, the issue is the runner, not the code.
 
 ### Symptom: site looks unstyled
 **Cause:** Google Fonts blocked or slow. Fallback stack is already defined; page is still legible.
@@ -148,6 +155,6 @@ localStorage keys used:
 
 - `docs/agent/SESSION-STATE.md` — rolling log of what changed and known issues.
 - `docs/agent/DECISIONS.md` — why things are the way they are.
-- `docs/agent/AUDIT.md` — post-hardening audit of Claude dependencies.
-- `docs/agent/archive/` — old behaviors preserved for reversibility.
+- `docs/agent/SETUP-GIST-SYNC.md` — watchlist sync setup.
+- `docs/agent/archive/` — historical audit + hardening reports + old prompts (read only when investigating that pass).
 - `git log --oneline` — full commit history.

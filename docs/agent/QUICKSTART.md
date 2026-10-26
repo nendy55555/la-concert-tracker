@@ -1,61 +1,41 @@
 # LA Concert Tracker — Quickstart
 
-## What Is This
-Single-file HTML concert tracker for LA. 399 concerts across 18 venues, April–November 2026. Cyberpunk neon design (Orbitron + IBM Plex Mono).
-
-## Hardened state (as of 2026-04-21)
-- Static site has **zero Claude runtime dependency**.
-- Weekly digest (`weekly-concert-email` scheduled task) runs a **pure Python script** — no WebSearch, no Firecrawl, no Chrome. Claude's only job is calling `create_draft` once.
-- Full test suite in `tests/`. Run `bash tests/run_all.sh` before any data push.
-- Target model tier for scheduled task: **Haiku**.
-- See `RUNBOOK.md` for "how do I…" answers.
+Single-file HTML tracker. 440 concerts, 18 venues (+Peppermint Club defensively), Apr–Dec 2026. GitHub Pages: https://nendy55555.github.io/la-concert-tracker/ (unlisted).
 
 ## Architecture
-Everything lives in `index.html`. No build system. CSS + JS inline. Data is a `CONCERTS` array of objects at the top of the `<script>` block (~line 1334).
+- `index.html` (2617 lines) — everything. No build step.
+- CSS: 11–1307 · HTML: 1308–1444 · JS+data: 1445–2615.
+- `CONCERTS` @ 1447 (refresh data appended near end, before `];`) · `WISHLIST_ARTISTS` @ 1907 (40 artists) · `VENUE_PRICE` @ 1924 · `VENUE_DEFAULT_VENDOR` @ 1947.
 
-## Key Data Fields
-```
-{ date, name, venue, genre, support, spotifyMonthlyListeners, ticketUrl, ticketVendor, onSaleDate, presaleDate }
-```
+## Data freshness
+`CONCERTS` is a static JS array — no auto-scraper. To refresh, scrape venue calendars + watchlist artists and append rows. Last refresh: **2026-06-02**.
+
+## Data row shape
+`{ date, name, venue, genre, support, spotifyMonthlyListeners, ticketUrl, ticketVendor, onSaleDate, presaleDate }`
 
 ## Features
-Calendar / List / My Artists views · watchlist (localStorage + optional Gist sync) · artist tracking with fuzzy match · venue + genre filters · Google Calendar export · vendor + on-sale badges with countdown · Upcoming Ticket Drops banner · artist search.
+Calendar/List/My Artists views · watchlist (localStorage + optional Gist sync) · fuzzy artist match · venue+genre filters · GCal export · vendor+on-sale badges · Upcoming Ticket Drops banner · artist search.
 
-## Current State
-- 399 concerts, 18 venues (+ Peppermint Club defensively).
-- Deployed: https://nendy55555.github.io/la-concert-tracker/ (unlisted).
-- Watchlist persistence: localStorage + optional GitHub Gist auto-sync (gear icon in header). See `SETUP-GIST-SYNC.md`.
-- In-flight: nothing (clean state).
-- Tests: 38 Python + 9 JS parity, all pass in <2s.
-- WISHLIST_ARTISTS: 40 entries.
+## Weekly digest
+- `scripts/weekly_digest.py` — Python stdlib only. Reads `CONCERTS` from `index.html`, renders HTML/text/JSON, sends via Gmail SMTP.
+- Creds: `.env` (gitignored) with `GMAIL_SENDER` + `GMAIL_APP_PASSWORD`. Template at `.env.example`.
+- Scheduled task `weekly-concert-email` runs Sun 09:03 PT on **Haiku**. Prompt = "run script with `--email`, report exit code". Zero Claude reasoning in the send path.
 
-## Running the digest manually
+## Common commands
 ```bash
 cd ~/Documents/Claude/Projects/"LA Concert Tracker"
-python3 scripts/weekly_digest.py --horizon-days 180 --text
+bash tests/run_all.sh                                              # 43 py + 9 js, <2s
+python3 scripts/weekly_digest.py --horizon-days 180 --text         # preview
+python3 scripts/weekly_digest.py --horizon-days 180 --email        # send
+git add -A && git commit -m "msg" && git push                      # deploy (~60s)
 ```
 
-## Running the tests
-```bash
-bash tests/run_all.sh
-```
+## Watchlist sync
+Optional GitHub Gist backend. Gear icon in header. See `SETUP-GIST-SYNC.md`.
 
-## Deploy
-```bash
-git add -A && git commit -m "msg" && git push
-```
-GitHub Pages auto-publishes in ~60s.
-
-## File Routing (line numbers)
-- Styles: 11–1092
-- HTML structure: 1093–1331
-- Concert data: 1334–1743
-- Wishlist: 1745–1754
-- Venue tables: 1756–1806
-- JS logic: 1808–2230
-- Scripts: `scripts/weekly_digest.py`
-- Tests: `tests/`
-- Docs: `docs/agent/` (SESSION-STATE, QUICKSTART, AUDIT, DECISIONS, RUNBOOK, HARDENING-INVENTORY)
-
-## When something breaks
-See `RUNBOOK.md` §7 — common failures and fixes. Most symptoms can be resolved without Claude.
+## Where to look
+- `SESSION-STATE.md` — current state, last session's work, known issues, next-session entry points.
+- `DECISIONS.md` — why things are the way they are.
+- `RUNBOOK.md` — common failures, data-edit recipe, tier swaps, auth rotation.
+- `SETUP-GIST-SYNC.md` — gist-sync setup walkthrough.
+- `archive/` — one-time hardening reports (2026-04-20). Don't read unless investigating that pass.

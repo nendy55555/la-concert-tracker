@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-24T15:35:25-07:00",
+  "generated_at": "2026-10-25T21:24:25-07:00",
   "as_of": "2026-04-20",
   "horizon_days": 300,
   "onsale_days": 14,
@@ -42,6 +42,19 @@
       "on_sale_date": "",
       "presale_date": "",
       "days_until": 147
+    },
+    {
+      "watchlist_artist": "Polo & Pan",
+      "name": "Polo & Pan",
+      "date": "2026-10-08",
+      "venue": "Hollywood Bowl",
+      "genre": "Electronic/EDM",
+      "support": "Empire of the Sun, Midnight Generation",
+      "ticket_url": "https://www.ticketmaster.com/empire-of-the-sun-ask-that-hollywood-california-10-08-2026/event/0B006465E365551D",
+      "ticket_vendor": "Hollywood Bowl Box Office",
+      "on_sale_date": "",
+      "presale_date": "",
+      "days_until": 171
     },
     {
       "watchlist_artist": "Jungle",
@@ -146,7 +159,21 @@
     "Flume": [],
     "JBEE": [],
     "Riodan": [],
-    "Polo & Pan": [],
+    "Polo & Pan": [
+      {
+        "watchlist_artist": "Polo & Pan",
+        "name": "Polo & Pan",
+        "date": "2026-10-08",
+        "venue": "Hollywood Bowl",
+        "genre": "Electronic/EDM",
+        "support": "Empire of the Sun, Midnight Generation",
+        "ticket_url": "https://www.ticketmaster.com/empire-of-the-sun-ask-that-hollywood-california-10-08-2026/event/0B006465E365551D",
+        "ticket_vendor": "Hollywood Bowl Box Office",
+        "on_sale_date": "",
+        "presale_date": "",
+        "days_until": 171
+      }
+    ],
     "Mau P": [],
     "Dave": [],
     "Jamie xx": [],
@@ -183,10 +210,10 @@
     "Cloonee": []
   },
   "totals": {
-    "concerts": 399,
+    "concerts": 440,
     "watchlist_artists": 40,
-    "watch_hits": 5,
+    "watch_hits": 6,
     "onsale_hits": 0,
-    "artists_with_shows": 4
+    "artists_with_shows": 5
   }
 }
