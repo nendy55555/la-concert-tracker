@@ -245,30 +245,31 @@ def normalize_for_match(s: str) -> str:
     return "".join(out)
 
 
-def is_watched_artist(name: str, watchlist_normalized: list[str]) -> bool:
+MIN_LEGACY_TERM = 5  # substring matching on bare names needs 5+ normalized chars ("dave" is 4)
+
+
+def _term_hits(cn: str, an: str, artists_normalized: list[str]) -> bool:
+    if artists_normalized:
+        return an in artists_normalized
+    if len(an) < MIN_LEGACY_TERM:
+        return cn == an
+    return cn == an or an in cn or cn in an
+
+
+def is_watched_artist(name: str, watchlist_normalized: list[str], artists: list[str] | None = None) -> bool:
     cn = normalize_for_match(name)
-    if not cn:
+    arts = [normalize_for_match(a) for a in (artists or []) if normalize_for_match(a)]
+    if not cn and not arts:
         return False
-    for an in watchlist_normalized:
-        if not an:
-            continue
-        if cn == an or an in cn or cn in an:
-            return True
-    return False
+    return any(an and _term_hits(cn, an, arts) for an in watchlist_normalized)
 
 
-def matched_watchlist_names(name: str, watchlist: list[str]) -> list[str]:
+def matched_watchlist_names(name: str, watchlist: list[str], artists: list[str] | None = None) -> list[str]:
     cn = normalize_for_match(name)
-    if not cn:
+    arts = [normalize_for_match(a) for a in (artists or []) if normalize_for_match(a)]
+    if not cn and not arts:
         return []
-    hits = []
-    for a in watchlist:
-        an = normalize_for_match(a)
-        if not an:
-            continue
-        if cn == an or an in cn or cn in an:
-            hits.append(a)
-    return hits
+    return [a for a in watchlist if normalize_for_match(a) and _term_hits(cn, normalize_for_match(a), arts)]
 
 
 # ─── 3. Date helpers ─────────────────────────────────────────────────────────
@@ -347,7 +348,7 @@ def build_digest(
 
         # Watchlist matches within horizon
         if d >= today and d <= horizon_end:
-            hits = matched_watchlist_names(name, wishlist)
+            hits = matched_watchlist_names(name, wishlist, artists=c.get("artists"))
             for artist in hits:
                 watch_hits.append(
                     WatchHit(
@@ -384,7 +385,7 @@ def build_digest(
                     days_until=(sd_date - today).days,
                     ticket_vendor=c.get("ticketVendor", ""),
                     ticket_url=c.get("ticketUrl", ""),
-                    is_watched=is_watched_artist(name, watchlist_norm),
+                    is_watched=is_watched_artist(name, watchlist_norm, artists=c.get("artists")),
                 )
             )
 
@@ -404,9 +405,14 @@ def build_digest(
 
     # Per-artist roster (every wishlist artist + their upcoming LA shows, or no-shows)
     per_artist: dict[str, list[WatchHit]] = {a: [] for a in wishlist}
-    for h in dedup_watch:
-        for artist in matched_watchlist_names(h.name, wishlist):
-            per_artist.setdefault(artist, []).append(h)
+    # Built from pre-dedup watch_hits so a show matching two watched artists credits both.
+    credited: set[tuple[str, str, str, str]] = set()
+    for h in watch_hits:
+        k = (h.watchlist_artist, h.name, h.date, h.venue)
+        if k in credited:
+            continue
+        credited.add(k)
+        per_artist.setdefault(h.watchlist_artist, []).append(h)
 
     return {
         "generated_at": datetime.now(TZ).isoformat(timespec="seconds"),

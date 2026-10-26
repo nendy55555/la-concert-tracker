@@ -1,45 +1,39 @@
 #!/usr/bin/env node
-/**
- * js_matcher_parity.js — confirm the Python normalizer matches the JS one in
- * index.html. Runs the exact inline JS from index.html against a handful of
- * test strings and compares to expected outputs (also generated from Python).
- *
- * Zero dependencies. Run with: node tests/js_matcher_parity.js
- * Exits 0 on success, 1 on mismatch.
- */
-
+// Parity: the matcher in index.html must agree with Python on tests/fixtures/matcher_cases.json.
+// Also keeps the original normalizer parity cases. Functions are extracted from index.html itself.
 'use strict';
+const fs = require('fs');
+const path = require('path');
+const ROOT = path.resolve(__dirname, '..');
+const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
 
-// Mirror of normalizeForMatch from index.html (must stay in sync).
-function normalizeForMatch(s) {
-  return s.toLowerCase()
-    .replace(/[\s\.\-&'''']/g, '')
-    .replace(/[^a-z0-9]/g, '');
-}
-
-// Expected outputs — these match what Python's normalize_for_match() produces.
-const cases = [
-  ['J. Cole', 'jcole'],
-  ['Barry Can\'t Swim', 'barrycantswim'],
-  ['A$AP Rocky', 'aaprocky'],
-  ['Jack Harlow', 'jackharlow'],
-  ['JUNGLE', 'jungle'],
-  ['Tame Impala', 'tameimpala'],
-  ['Fred Again..', 'fredagain'],
-  ['', ''],
-  ['   ..', ''],
-];
-
-let failed = 0;
-for (const [input, expected] of cases) {
-  const got = normalizeForMatch(input);
-  if (got !== expected) {
-    console.error(`MISMATCH  input=${JSON.stringify(input)}  expected=${JSON.stringify(expected)}  got=${JSON.stringify(got)}`);
-    failed += 1;
+function extract(fnName) {
+  const start = html.indexOf('function ' + fnName + '(');
+  if (start === -1) { console.error('could not find ' + fnName); process.exit(1); }
+  let depth = 0, i = html.indexOf('{', start);
+  for (; i < html.length; i++) {
+    if (html[i] === '{') depth++;
+    else if (html[i] === '}') { depth--; if (depth === 0) break; }
   }
+  return html.slice(start, i + 1);
 }
-if (failed > 0) {
-  console.error(`\n${failed} normalizer mismatches. Python and JS have drifted — fix both.`);
-  process.exit(1);
+const lib = new Function(extract('normalizeForMatch') + '\nvar MIN_LEGACY_TERM = 5;\n' + extract('artistMatches') +
+  '\nreturn {normalizeForMatch: normalizeForMatch, artistMatches: artistMatches};')();
+
+const normCases = [
+  ['J. Cole', 'jcole'], ["Barry Can't Swim", 'barrycantswim'], ['A$AP Rocky', 'aaprocky'],
+  ['Jack Harlow', 'jackharlow'], ['JUNGLE', 'jungle'], ['Tame Impala', 'tameimpala'],
+  ['Fred Again..', 'fredagain'], ['', ''], ['   ..', ''],
+];
+let ok = 0, total = 0;
+for (const [input, want] of normCases) {
+  total++; const got = lib.normalizeForMatch(input);
+  if (got === want) ok++; else console.error('normalizer mismatch', JSON.stringify(input), got, want);
 }
-console.log(`JS/Python normalizer parity: ${cases.length}/${cases.length} cases match.`);
+const cases = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'matcher_cases.json'), 'utf8'));
+for (const c of cases) {
+  total++; const got = lib.artistMatches(c.name, c.artists, [c.watch]);
+  if (got === c.expect) ok++; else console.error('matcher mismatch', JSON.stringify(c), 'got', got);
+}
+console.log(`JS/Python matcher parity: ${ok}/${total} cases match.`);
+process.exit(ok === total ? 0 : 1);

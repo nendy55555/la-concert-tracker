@@ -1318,7 +1318,7 @@
     <span class="header-year" id="headerYear">2026</span>
   </div>
   <div class="subtitle">Hollywood Bowl / Greek Theatre / Kia Forum / Crypto.com Arena / SoFi Stadium + more</div>
-  <div class="last-updated">Data refreshed: March 31, 2026 &bull; 399 shows across 19 venues</div>
+  <div class="last-updated"><!--LAST_REFRESH:START-->Data refreshed: June 2, 2026 &bull; 23 upcoming shows across 19 venues<!--LAST_REFRESH:END--></div>
   <div class="search-wrap">
     <span class="search-icon">&#128269;</span>
     <input type="text" class="search-input" id="artistSearch" placeholder="Search artists..." autocomplete="off">
@@ -2304,7 +2304,20 @@ function getSaleBadge(ev) {
 function toggleWatchlist(key) { if (watchlist.has(key)) watchlist.delete(key); else watchlist.add(key); saveWatchlist(); if (currentView === 'myartists') renderMyArtistsView(); }
 function concertKey(c) { return c.date + '|' + c.name + '|' + c.venue; }
 function normalizeForMatch(s) { return s.toLowerCase().replace(/[\s\.\-&''']/g, '').replace(/[^a-z0-9]/g, ''); }
-function isWatchedArtist(n) { var cn = normalizeForMatch(n); return trackedArtists.some(function(a) { var an = normalizeForMatch(a); return cn===an||cn.includes(an)||an.includes(cn); }); }
+var MIN_LEGACY_TERM = 5;
+function artistMatches(name, artists, watchTerms) {
+  var cn = normalizeForMatch(name || '');
+  var arts = (artists || []).map(normalizeForMatch).filter(Boolean);
+  if (!cn && !arts.length) return false;
+  return watchTerms.some(function(a) {
+    var an = normalizeForMatch(a);
+    if (!an) return false;
+    if (arts.length) return arts.indexOf(an) !== -1;
+    if (an.length < MIN_LEGACY_TERM) return cn === an;
+    return cn === an || cn.includes(an) || an.includes(cn);
+  });
+}
+function isWatchedArtist(n, artists) { return artistMatches(n, artists, trackedArtists); }
 
 function updateWatchlistBanner() {
   document.getElementById('wlCount').textContent = watchlist.size;
@@ -2364,7 +2377,7 @@ function renderListView(){
     var todayLabel=date===today?' — TODAY':'';
     html+='<div class="list-date-group"><div class="list-date-header'+(past?' past-date':'')+'">'+d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+todayLabel+'</div>';
     grouped[date].sort(concertSort).forEach(function(ev){
-      var cls=GENRE_CLASS[ev.genre]||'genre-rock',key=concertKey(ev),starred=watchlist.has(key),watched=isWatchedArtist(ev.name);
+      var cls=GENRE_CLASS[ev.genre]||'genre-rock',key=concertKey(ev),starred=watchlist.has(key),watched=isWatchedArtist(ev.name, ev.artists);
       var wb=watched?'<span class="wl-star-badge">\u2605</span>':'';
       var supportText=ev.support?'<div class="list-event-support" title="'+ev.support+'">w/ '+ev.support+'</div>':'';
       var priceText=getPriceLabel(ev)?'<div class="list-event-price">'+getPriceLabel(ev)+'</div>':'';
@@ -2448,7 +2461,7 @@ function renderMyArtistsView(){
 function addTrackedArtist(n){n=n.trim();if(!n)return;if(!trackedArtists.includes(n)){trackedArtists.push(n);saveTrackedArtists();renderMyArtistsView();}}
 function addBulkArtists(){var ta=document.getElementById('bulkArtistInput');if(!ta)return;var lines=ta.value.split('\n');var added=0;lines.forEach(function(l){l=l.trim();if(l&&!trackedArtists.includes(l)){trackedArtists.push(l);added++;}});if(added>0){saveTrackedArtists();renderMyArtistsView();}ta.value='';}
 function removeTrackedArtist(n){trackedArtists=trackedArtists.filter(function(a){return a!==n;});saveTrackedArtists();renderMyArtistsView();}
-function getMatchingConcerts(a){var an=normalizeForMatch(a);return CONCERTS.filter(function(c){var cn=normalizeForMatch(c.name);return cn===an||cn.includes(an)||an.includes(cn);}).sort(function(a,b){return a.date<b.date?-1:1;});}
+function getMatchingConcerts(a){return CONCERTS.filter(function(c){return artistMatches(c.name,c.artists,[a]);}).sort(function(a,b){return a.date<b.date?-1:1;});}
 function addArtistFromInput(){var i=document.getElementById('newArtistInput');if(!i)return;addTrackedArtist(i.value);i.value='';i.focus();}
 
 function updateArtistAlertBanner(){
@@ -2467,9 +2480,9 @@ function renderCalendar(){
   for(var day=1;day<=dim;day++){
     var ds=currentYear+'-'+String(currentMonth+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
     var de=filteredConcerts.filter(function(c){return c.date===ds;}).sort(concertSort);
-    var isT=ds===ts,isPast=ds<ts,hasE=de.length>0,hasW=de.some(function(ev){return isWatchedArtist(ev.name);}),chips='',mx=6;
+    var isT=ds===ts,isPast=ds<ts,hasE=de.length>0,hasW=de.some(function(ev){return isWatchedArtist(ev.name, ev.artists);}),chips='',mx=6;
     if(hidePast&&isPast&&!isT){html+='<div class="cal-cell past-day'+(hasE?' has-events':'')+'"><div class="day-num">'+day+'</div>'+(hasE?'<div class="more-events" style="opacity:0.6;">'+de.length+' show'+(de.length>1?'s':'')+'</div>':'')+'</div>';continue;}
-    de.slice(0,mx).forEach(function(ev){var cl=GENRE_CLASS[ev.genre]||'genre-rock',w=isWatchedArtist(ev.name);chips+='<div class="event-chip '+cl+(w?' watched-artist':'')+'">'+ev.name+(ev.support?'<div class="support-tag">w/ '+ev.support+'</div>':'')+'</div>';});
+    de.slice(0,mx).forEach(function(ev){var cl=GENRE_CLASS[ev.genre]||'genre-rock',w=isWatchedArtist(ev.name, ev.artists);chips+='<div class="event-chip '+cl+(w?' watched-artist':'')+'">'+ev.name+(ev.support?'<div class="support-tag">w/ '+ev.support+'</div>':'')+'</div>';});
     if(de.length>mx)chips+='<div class="more-events">+'+(de.length-mx)+' more</div>';
     var dn=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],dl=dn[new Date(currentYear,currentMonth,day).getDay()];
     var todayBadge=isT?'<span class="today-badge">TODAY</span>':'';
@@ -2495,7 +2508,7 @@ function openModal(ds){
     var gcb='<a class="gcal-btn" href="'+generateGCalUrl(ev)+'" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5zm2 4h5v5H7v-5z"/></svg>Add to Cal</a>';
     var saleBdg=getSaleBadge(ev);
     var br='<div class="modal-btn-row"><span class="watchlist-star '+(starred?'active':'')+'" style="font-size:1.2rem;cursor:pointer;" onclick="toggleWatchlist(\''+key.replace(/'/g,"\\'")+'\');openModal(\''+ds+'\');">&#11088;</span>'+tb+sb+gcb+'</div>';
-    var iw=isWatchedArtist(ev.name),wb=iw?' <span style="font-size:0.55rem;background:var(--neon-amber-dim);color:var(--neon-amber);border:1px solid rgba(255,215,64,0.3);border-radius:3px;padding:1px 6px;font-family:var(--font-display);font-weight:700;letter-spacing:0.08em;vertical-align:middle;">WATCHING</span>':'';
+    var iw=isWatchedArtist(ev.name, ev.artists),wb=iw?' <span style="font-size:0.55rem;background:var(--neon-amber-dim);color:var(--neon-amber);border:1px solid rgba(255,215,64,0.3);border-radius:3px;padding:1px 6px;font-family:var(--font-display);font-weight:700;letter-spacing:0.08em;vertical-align:middle;">WATCHING</span>':'';
     var vendorBdg=getVendorBadge(ev);
     var priceBdg=getPriceBadge(ev);
     var badgeRow=(saleBdg||vendorBdg||priceBdg)?'<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">'+priceBdg+vendorBdg+saleBdg+'</div>':'';
@@ -2569,7 +2582,7 @@ function renderUpcomingDrops() {
 
     var countdownCls = days <= 2 ? 'drop-countdown imminent' : 'drop-countdown';
     var vendorBdg = getVendorBadge(ev);
-    var watched = isWatchedArtist(ev.name);
+    var watched = isWatchedArtist(ev.name, ev.artists);
     var watchBdg = watched ? '<span style="font-size:0.55rem;background:var(--neon-amber-dim);color:var(--neon-amber);border:1px solid rgba(255,215,64,0.3);border-radius:3px;padding:1px 6px;font-family:var(--font-display);font-weight:700;letter-spacing:0.08em;">WATCHING</span>' : '';
 
     html += '<div class="drop-card">';

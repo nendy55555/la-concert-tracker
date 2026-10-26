@@ -445,5 +445,31 @@ class TestEmail(unittest.TestCase):
                     os.environ[k] = v
 
 
+class TestMatcherPrecision(unittest.TestCase):
+    def setUp(self):
+        self.cases = json.loads((FIXTURE_DIR / "matcher_cases.json").read_text())
+
+    def test_e18_e19_shared_cases(self):
+        for c in self.cases:
+            wl = [wd.normalize_for_match(c["watch"])]
+            got = wd.is_watched_artist(c["name"], wl, artists=c["artists"])
+            self.assertEqual(got, c["expect"], c)
+            names = wd.matched_watchlist_names(c["name"], [c["watch"]], artists=c["artists"])
+            self.assertEqual(bool(names), c["expect"], c)
+
+    def test_roster_agrees_with_watchlist_section_for_every_matched_artist(self):
+        concerts = [{"date": "2026-12-01", "name": "Empire of the Sun", "venue": "Hollywood Bowl", "genre": "Pop",
+                     "support": "Polo & Pan", "spotifyMonthlyListeners": 0, "ticketUrl": "", "ticketVendor": "",
+                     "onSaleDate": "", "presaleDate": "", "tmId": "X", "artists": ["Empire of the Sun", "Polo & Pan"],
+                     "firstSeen": "2026-10-01T09:00:00-07:00"}]
+        d = wd.build_digest(concerts, ["Polo & Pan", "Empire of the Sun", "Flume"], date(2026, 10, 26), 180, 14)
+        self.assertEqual(len(d["watch_hits"]), 1)  # one show, deduplicated
+        # per_artist lists every wishlist artist; unmatched ones map to an empty list
+        self.assertTrue(d["per_artist"]["Polo & Pan"])
+        self.assertTrue(d["per_artist"]["Empire of the Sun"])
+        self.assertEqual(d["per_artist"]["Flume"], [])
+        self.assertEqual(d["totals"]["artists_with_shows"], 2)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
