@@ -66,6 +66,7 @@ KNOWN_GENRES = {
     "Indie/Folk",
     "Punk",
     "Latin",
+    "Other",
 }
 
 
