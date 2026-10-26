@@ -1,41 +1,32 @@
-LA Concert Weekly — 2026-04-20
+LA Concert Weekly — 2026-10-25
 ============================================================
 
-Data refreshed -188 days ago (443 upcoming shows). Feed connected 2026-10-25: 443 upcoming shows loaded.
+Data refreshed 0 days ago (443 upcoming shows). Feed connected 2026-10-25: 443 upcoming shows loaded.
 
-5 watchlist shows in the next 300 days · 13 on-sale drops in the next 14 days
+0 watchlist shows in the next 180 days · 13 on-sale drops in the next 14 days
 
 Full tracker: https://nendy55555.github.io/la-concert-tracker/
 
 ── WATCHLIST — upcoming LA shows ──
-  • Thu Sep 3, 2026 — J. Cole @ Intuit Dome  (136d)
-    https://www.ticketmaster.com/j-cole-the-falloff-tour-los-angeles-california-09-07-2026/event/2C0064529BE01DBE
-  • Fri Sep 4, 2026 — J. Cole @ Intuit Dome  (137d)
-    https://www.ticketmaster.com/j-cole-the-falloff-tour-los-angeles-california-09-07-2026/event/2C0064529BE01DBE
-  • Mon Sep 14, 2026 — Jack Harlow @ Hollywood Palladium  (147d)
-    https://www.ticketmaster.com/jack-harlow-monica-tour-hollywood-california-09-14-2026/event/09006471809E4335
-  • Thu Oct 8, 2026 — Polo & Pan @ Hollywood Bowl  w/ Empire of the Sun, Midnight Generation  (171d)
-    https://www.ticketmaster.com/empire-of-the-sun-ask-that-hollywood-california-10-08-2026/event/0B006465E365551D
-  • Sat Oct 10, 2026 — JUNGLE @ Crypto.com Arena  (173d)
-    https://www.axs.com/events/1373198/jungle-tickets
+None in the horizon window.
 
 ── ON-SALE DROPS — next 14 days ──
-  PRESALE  Tue Apr 21 @ 12:00 PM  —  SLAYER: Reign In Blood 40th Anniversary 2026 @ Kia Forum on Fri Nov 13, 2026
-  PRESALE  Tue Apr 21 @ 10:00 AM  —  Teddy Swims: The UGLY Tour @ Kia Forum on Wed Nov 18, 2026
-  PRESALE  Wed Apr 22 @ 10:00 AM  —  THE DAMNED - FINAL DAMNATION 50 @ The Wiltern on Tue Nov 17, 2026
-  PRESALE  Wed Apr 22 @ 10:00 AM  —  The Neighbourhood: THE WOURLD TOUR @ Kia Forum on Sat Dec 5, 2026
-  PRESALE  Wed Apr 22 @ 2:00 PM  —  The R&B Tour - Starring Usher Raymond & Chris Brown @ SoFi Stadium on Sun Nov 15, 2026
-  PRESALE  Thu Apr 23 @ 9:00 AM  —  SLAYER: Reign In Blood 40th Anniversary 2026 @ Kia Forum on Sat Nov 14, 2026
-  ON SALE  Fri Apr 24 @ 10:00 AM  —  SLAYER: Reign In Blood 40th Anniversary 2026 @ Kia Forum on Fri Nov 13, 2026
-  ON SALE  Fri Apr 24 @ 10:00 AM  —  SLAYER: Reign In Blood 40th Anniversary 2026 @ Kia Forum on Sat Nov 14, 2026
-  ON SALE  Fri Apr 24 @ 10:00 AM  —  Teddy Swims: The UGLY Tour @ Kia Forum on Wed Nov 18, 2026
-  ON SALE  Fri Apr 24 @ 10:00 AM  —  THE DAMNED - FINAL DAMNATION 50 @ The Wiltern on Tue Nov 17, 2026
-  ON SALE  Fri Apr 24 @ 10:00 AM  —  The Neighbourhood: THE WOURLD TOUR @ Kia Forum on Sat Dec 5, 2026
-  ON SALE  Mon Apr 27 @ 2:00 PM  —  The R&B Tour - Starring Usher Raymond & Chris Brown @ SoFi Stadium on Sun Nov 15, 2026
-  ON SALE  Fri May 1 @ 10:00 AM  —  Shaboozey w/ Carter Faith @ Greek Theatre on Tue Oct 27, 2026
+  ON SALE  Mon Oct 26 @ 10:00 AM  —  System Of A Down: Live At The Rose Bowl @ Rose Bowl on Sat Jun 5, 2027
+  ON SALE  Mon Oct 26 @ 10:00 AM  —  System Of A Down: Live At The Rose Bowl @ Rose Bowl on Sun Jun 6, 2027
+  ON SALE  Mon Oct 26 @ 10:00 AM  —  System Of A Down: Live At The Rose Bowl @ Rose Bowl on Thu Jun 10, 2027
+  PRESALE  Tue Oct 27 @ 10:00 AM  —  2hollis: The Pirouette Tour @ Kia Forum on Fri Mar 5, 2027
+  PRESALE  Tue Oct 27 @ 10:00 AM  —  CHVRCHES: LIVE 2027 @ Hollywood Palladium on Sun Mar 14, 2027
+  PRESALE  Tue Oct 27 @ 10:00 AM  —  Queens Of The Stone Age - Perfecth World Tour @ Kia Forum on Sun May 2, 2027
+  PRESALE  Tue Oct 27 @ 10:00 AM  —  Two Door Cinema Club - Tourist History 15th Anniversary Tour @ Hollywood Palladium on Sat May 22, 2027
+  ON SALE  Wed Oct 28 @ 10:00 AM  —  2hollis: The Pirouette Tour @ Kia Forum on Fri Mar 5, 2027
+  PRESALE  Wed Oct 28 @ 10:00 AM  —  Ashe: The Girl of Your Dreams Tour @ The Wiltern on Wed Feb 24, 2027
+  ON SALE  Thu Oct 29 @ 10:00 AM  —  Queens Of The Stone Age - Perfecth World Tour @ Kia Forum on Sun May 2, 2027
+  ON SALE  Fri Oct 30 @ 10:00 AM  —  Ashe: The Girl of Your Dreams Tour @ The Wiltern on Wed Feb 24, 2027
+  ON SALE  Fri Oct 30 @ 10:00 AM  —  CHVRCHES: LIVE 2027 @ Hollywood Palladium on Sun Mar 14, 2027
+  ON SALE  Fri Oct 30 @ 10:00 AM  —  Two Door Cinema Club - Tourist History 15th Anniversary Tour @ Hollywood Palladium on Sat May 22, 2027
 
 ── FULL WATCHLIST ROSTER ──
-With LA shows (4): Jack Harlow, JCole, Polo & Pan, Jungle
-No LA shows in tracker (36): Lazewo, Jigitz, Fred Again, Kendrick Lamar, Tame Impala, Disco Lines, Notion, James Hype, Justice, Chris Lake, Central Cee, Wes Mills, Nimino, Maribou State, Flume, JBEE, Riodan, Mau P, Dave, Jamie xx, Its Murph, Chris Lorenzo, Disclosure, Kaytranada, Odesza, Swimming Paul, Barry Can't Swim, Burna Boy, Skepta, AJ Tracey, Zuan, ATRIP, Skrillex, Moby, Hugel, Cloonee
+With LA shows (0): —
+No LA shows in tracker (40): Jack Harlow, Lazewo, Jigitz, JCole, Fred Again, Kendrick Lamar, Tame Impala, Disco Lines, Notion, James Hype, Justice, Chris Lake, Central Cee, Wes Mills, Nimino, Maribou State, Flume, JBEE, Riodan, Polo & Pan, Mau P, Dave, Jamie xx, Its Murph, Chris Lorenzo, Disclosure, Jungle, Kaytranada, Odesza, Swimming Paul, Barry Can't Swim, Burna Boy, Skepta, AJ Tracey, Zuan, ATRIP, Skrillex, Moby, Hugel, Cloonee
 
-Generated 2026-10-25T21:32:13-07:00 · 860 concerts in source
+Generated 2026-10-25T21:33:25-07:00 · 860 concerts in source
