@@ -39,7 +39,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import weekly_digest as wd  # noqa: E402  (parser + .env loader live there)
-# from liveness import Result, check_max_date, run_checks  # noqa: E402  (copied accelerator, Task 4)
+from liveness import Result, check_max_date, run_checks  # noqa: E402  (copied accelerator)
 
 
 def load_venues(path: Path) -> list[dict]:
@@ -202,3 +202,207 @@ def merge_rows(existing: list[dict], fetched: dict[str, list[dict]], failed: set
             out.append(r)
     out.sort(key=lambda r: (r["date"], r["name"].lower()))
     return out
+
+
+STATE_PATH = ROOT / "data" / "refresh_state.json"
+VENUES_PATH = ROOT / "scripts" / "venues.json"
+INDEX_PATH = ROOT / "index.html"
+MARK_START = "<!--LAST_REFRESH:START-->"
+MARK_END = "<!--LAST_REFRESH:END-->"
+THIN_FEED_RATIO = 0.5
+MIN_FUTURE_ROWS = 20
+MIN_HORIZON_DAYS = 60
+
+
+def render_concerts_block(rows: list[dict]) -> str:
+    lines = ["["]
+    current = None
+    for r in rows:
+        ym = r["date"][:7]
+        if ym != current:
+            y, m = ym.split("-")
+            lines.append(f"  // ── {calendar.month_name[int(m)].upper()} {y} ──")
+            current = ym
+        lines.append(render_row(r))
+    lines.append("]")
+    return "\n".join(lines)
+
+
+def stamp_text(today: date, future_rows: int, venue_count: int) -> str:
+    return f"Data refreshed: {today.strftime('%B')} {today.day}, {today.year} &bull; {future_rows} upcoming shows across {venue_count} venues"
+
+
+def rewrite_index(src: str, rows: list[dict], stamp: str) -> str:
+    m = wd.CONCERTS_RE.search(src)
+    if not m:
+        raise ValueError("const CONCERTS = [ not found")
+    open_idx = m.end() - 1
+    old = wd._extract_array(src, open_idx)
+    out = src[:open_idx] + render_concerts_block(rows) + src[open_idx + len(old):]
+    if out.count(MARK_START) != 1 or out.count(MARK_END) != 1:
+        raise ValueError("refresh markers missing or duplicated")
+    pre, rest = out.split(MARK_START)
+    _, post = rest.split(MARK_END)
+    return pre + MARK_START + stamp + MARK_END + post
+
+
+def load_state(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8") or "{}")
+
+
+def _atomic_write(path: Path, text: str) -> None:
+    fd, tmp = tempfile.mkstemp(dir=str(path.parent), prefix=path.name, suffix=".tmp")
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        f.write(text)
+    os.replace(tmp, path)
+
+
+def save_state(path: Path, state: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    _atomic_write(path, json.dumps(state, indent=2, sort_keys=True) + "\n")
+
+
+def _load_rows(path: Path) -> list[dict]:
+    """weekly_digest.load_data exits the process on a parse failure; turn that into ValueError."""
+    try:
+        rows, _ = wd.load_data(path)
+    except SystemExit as e:
+        raise ValueError(f"load_data exited {e.code}") from None
+    return rows
+
+
+def run(index_path: Path, venues_path: Path, state_path: Path, key: str, today: date, now: datetime,
+        http: Callable[[str], dict] = urlopen_json, dry_run: bool = False, accept_thin: bool = False) -> tuple[int, dict]:
+    try:
+        state = load_state(state_path)
+    except (OSError, json.JSONDecodeError) as e:
+        state = {}
+        print(f"WARN: state file unreadable, starting from empty: {e}", file=sys.stderr)
+    stamp_now = now.isoformat(timespec="seconds")
+    today_iso = today.isoformat()
+    summary: dict = {"today": today_iso, "per_venue": {}, "failed_venues": [], "uncovered_venues": [], "venue_seen": {}}
+
+    def fail(code: int, status: str, msg: str) -> tuple[int, dict]:
+        state.update(last_attempt_at=stamp_now, last_attempt_status=status)
+        if not dry_run:
+            save_state(state_path, state)
+        summary.update(exit_code=code, status=status, error=msg)
+        print(f"ERROR: {msg}", file=sys.stderr)
+        return code, summary
+
+    if not key:
+        return fail(3, "config", "TM_DISCOVERY_API_KEY missing (set it in .env)")
+    if not index_path.exists():
+        return fail(1, "config", f"{index_path} missing")
+    try:
+        venues = load_venues(venues_path)
+    except (OSError, ValueError, json.JSONDecodeError) as e:
+        return fail(3, "config", f"venues.json unreadable: {e}")
+    try:
+        existing = _load_rows(index_path)
+    except (ValueError, json.JSONDecodeError) as e:
+        return fail(2, "parse", f"CONCERTS unparseable: {e}")
+
+    existing_future_venues = {r["venue"] for r in existing if r["date"] >= today_iso}
+    fetched: dict[str, list[dict]] = {}
+    failed: dict[str, str] = {}  # venue → reason
+    uncovered = {v["name"] for v in venues if not v["tmVenueIds"]}
+    for v in venues:
+        if v["name"] in uncovered:
+            continue
+        try:
+            rows = fetch_venue_events(v, key, today, now, http=http, seen=summary["venue_seen"])
+        except Exception as e:  # any fetch error isolates to this venue
+            failed[v["name"]] = "fetch"
+            summary["per_venue"][v["name"]] = None
+            print(f"WARN: {v['name']} fetch failed: {e}", file=sys.stderr)
+            continue
+        if not rows and v["name"] in existing_future_venues:
+            # The feed says "nothing upcoming" for a room that index.html still lists shows at.
+            # A dead or renamed venue id looks exactly like this; keep the rows and say so, every run.
+            failed[v["name"]] = "zero_rows"
+            summary["per_venue"][v["name"]] = 0
+            print(f"WARN: {v['name']} returned 0 rows but index.html has future rows there; keeping them", file=sys.stderr)
+            continue
+        fetched[v["name"]] = rows
+        summary["per_venue"][v["name"]] = len(rows)
+    summary["failed_venues"] = [f"{n} ({r})" for n, r in sorted(failed.items())]
+    summary["uncovered_venues"] = sorted(uncovered)
+    if not fetched:
+        return fail(4, "all_failed", "every venue fetch failed")
+
+    future_fetched = sum(len(r) for r in fetched.values())
+    prev = int(state.get("future_rows") or 0)
+    if prev and future_fetched < THIN_FEED_RATIO * prev and not accept_thin:
+        return fail(5, "thin_feed", f"feed returned {future_fetched} future rows, previous run had {prev}; rerun with --accept-thin if this drop is real")
+
+    merged = merge_rows(existing, fetched, set(failed), uncovered, today)
+    future_rows = sum(1 for r in merged if r["date"] >= today.isoformat())
+    stamp = stamp_text(today, future_rows, len(venues))
+    src = index_path.read_text(encoding="utf-8")
+    try:
+        new_src = rewrite_index(src, merged, stamp)
+    except ValueError as e:
+        return fail(6, "verify_failed", str(e))
+
+    # Verify before replacing: parse the new text exactly the way the digest will.
+    verify_path = index_path.with_suffix(".verify.tmp")
+    try:
+        verify_path.write_text(new_src, encoding="utf-8")
+        parsed = _load_rows(verify_path)
+    except (ValueError, json.JSONDecodeError) as e:
+        return fail(6, "verify_failed", f"rewritten index.html does not parse: {e}")
+    finally:
+        verify_path.unlink(missing_ok=True)
+    if parsed != merged:
+        return fail(6, "verify_failed", "rewritten rows differ from merged rows after a parse round-trip")
+
+    summary.update(future_rows=future_rows, rows_total=len(merged), stamp=stamp)
+    if dry_run:
+        summary.update(exit_code=0, status="dry_run")
+        return 0, summary
+
+    _atomic_write(index_path, new_src)
+    state.update(last_success_at=stamp_now, last_attempt_at=stamp_now, last_attempt_status="ok",
+                 future_rows=future_rows, per_venue=summary["per_venue"], failed_venues=summary["failed_venues"])
+    save_state(state_path, state)
+
+    future_dates = [r["date"] for r in merged if r["date"] >= today.isoformat()]
+    with contextlib.redirect_stdout(sys.stderr):  # liveness prints PASS/FAIL lines; keep stdout for the JSON summary
+        code = run_checks([
+            lambda: check_max_date(future_dates, -MIN_HORIZON_DAYS, today=today),
+            lambda: _check_floor(future_rows),
+        ])
+    if code != 0:
+        state.update(last_attempt_status="liveness_failed")
+        save_state(state_path, state)
+        summary.update(exit_code=1, status="liveness_failed")
+        return 1, summary
+    summary.update(exit_code=0, status="ok")
+    return 0, summary
+
+
+def _check_floor(future_rows: int) -> Result:
+    ok = future_rows >= MIN_FUTURE_ROWS
+    return Result(ok, "future_rows_floor", f"{future_rows} >= {MIN_FUTURE_ROWS}" if ok else f"only {future_rows} future rows")
+
+
+def main(argv: list[str] | None = None) -> int:
+    p = argparse.ArgumentParser(description="Refresh CONCERTS from the Ticketmaster Discovery API")
+    p.add_argument("--dry-run", action="store_true", help="fetch and report, write nothing")
+    p.add_argument("--as-of", default=None, help="override today (YYYY-MM-DD)")
+    p.add_argument("--accept-thin", action="store_true", help="skip the thin-feed guard once (a real drop, e.g. a venue left Ticketmaster)")
+    args = p.parse_args(argv)
+    wd.load_env_file(ROOT / ".env")
+    key = os.environ.get("TM_DISCOVERY_API_KEY", "").strip()
+    now = datetime.now(TZ)
+    today = date.fromisoformat(args.as_of) if args.as_of else now.date()
+    code, summary = run(INDEX_PATH, VENUES_PATH, STATE_PATH, key, today, now, dry_run=args.dry_run, accept_thin=args.accept_thin)
+    print(json.dumps(summary, indent=2, sort_keys=True))
+    return code
+
+
+if __name__ == "__main__":
+    sys.exit(main())

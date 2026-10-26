@@ -2,6 +2,7 @@
 """Tests for scripts/refresh_concerts.py. Zero network: every HTTP call is injected."""
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import shutil
@@ -194,6 +195,143 @@ class TestMergeRows(unittest.TestCase):
         self.assertEqual([r["date"] for r in out], sorted(r["date"] for r in out))
         tail = [r["name"] for r in out if r["date"] == "2026-12-05"]
         self.assertEqual(tail, ["A band", "b band"])
+
+
+class TestRunEndToEnd(unittest.TestCase):
+    """Drives run() against a copy of mini_index_feed.html with a fake HTTP layer."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.index = self.tmp / "index.html"
+        shutil.copy(FEED_FIXTURE, self.index)
+        self.venues = ROOT / "scripts" / "venues.json"
+        self.state = self.tmp / "refresh_state.json"
+        self.before = self.index.read_bytes()
+        self.n_past = sum(1 for c in wd.load_data(FEED_FIXTURE)[0] if c["date"] < TODAY.isoformat())
+        self.calls = 0
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp)
+
+    def good_http(self, n_per_venue: int = 12, empty_venue_ids: set[str] = frozenset(), spread: int = 7):
+        """Every venue id returns n distinct future music events on one page (0 for ids in empty_venue_ids)."""
+        def http(url: str) -> dict:
+            self.calls += 1
+            vid = url.split("venueId=")[1].split("&")[0]
+            n = 0 if vid in empty_venue_ids else n_per_venue
+            evs = []
+            for i in range(n):
+                d = date.fromordinal(TODAY.toordinal() + 30 + spread * i)  # n=12 reaches +107 days, past the 60-day liveness horizon; n=1 stays at +30 and trips it (E17)
+                evs.append({"name": f"Act {vid} {i}", "id": f"{vid}-{i}", "url": f"https://tm/{vid}/{i}",
+                            "dates": {"start": {"localDate": d.isoformat(), "dateTBD": False, "dateTBA": False}, "status": {"code": "onsale"}},
+                            "sales": {"public": {"startDateTime": "2026-10-01T17:00:00Z"}},
+                            "classifications": [{"segment": {"name": "Music"}, "genre": {"name": "Rock"}}],
+                            "_embedded": {"venues": [{"id": vid}], "attractions": [{"name": f"Act {vid} {i}"}]}})
+            return {"_embedded": {"events": evs}, "page": {"totalPages": 1}}
+        return http
+
+    def run_quiet(self, *args, **kwargs):
+        import io
+        with contextlib.redirect_stderr(io.StringIO()), contextlib.redirect_stdout(io.StringIO()):
+            return rc.run(*args, **kwargs)
+
+    def test_e11_thin_feed_writes_nothing(self):
+        self.state.write_text(json.dumps({"future_rows": 400, "last_success_at": "2026-10-19T09:00:00-07:00"}))
+        code, summary = self.run_quiet(self.index, self.venues, self.state, "KEY", TODAY, NOW, http=self.good_http(2))
+        self.assertEqual(code, 5)
+        self.assertEqual(self.index.read_bytes(), self.before)
+        st = json.loads(self.state.read_text())
+        self.assertEqual(st["last_attempt_status"], "thin_feed")
+        self.assertEqual(st["last_success_at"], "2026-10-19T09:00:00-07:00")
+
+    def test_e12_all_failed_writes_nothing(self):
+        def boom(url: str) -> dict:
+            raise RuntimeError("down")
+        code, summary = self.run_quiet(self.index, self.venues, self.state, "KEY", TODAY, NOW, http=boom)
+        self.assertEqual(code, 4)
+        self.assertEqual(self.index.read_bytes(), self.before)
+        self.assertEqual(json.loads(self.state.read_text())["last_attempt_status"], "all_failed")
+
+    def test_e12b_zero_rows_with_existing_future_rows_counts_as_failed_every_run(self):
+        fixture_future_kia = [c for c in wd.load_data(FEED_FIXTURE)[0] if c["venue"] == "Kia Forum" and c["date"] >= TODAY.isoformat()]
+        self.assertTrue(fixture_future_kia, "fixture must hold the Tame Impala ghost at Kia Forum")
+        for run_no in (1, 2):  # no state on run 1; run 2 sees run 1's state with per_venue["Kia Forum"] == 0
+            code, summary = self.run_quiet(self.index, self.venues, self.state, "KEY", TODAY, NOW,
+                                           http=self.good_http(12, empty_venue_ids={"KovZpZAEkn6A"}))
+            self.assertEqual(code, 0, (run_no, summary))
+            self.assertEqual(summary["failed_venues"], ["Kia Forum (zero_rows)"], run_no)
+            self.assertIn("Tame Impala", self.index.read_text(), run_no)  # kept both times
+            self.assertEqual(json.loads(self.state.read_text())["failed_venues"], ["Kia Forum (zero_rows)"], run_no)
+
+    def test_e12c_zero_rows_with_no_existing_future_rows_is_fine(self):
+        # The Fonda has no future rows in the fixture, so an empty feed for it is a legitimate quiet calendar.
+        code, summary = self.run_quiet(self.index, self.venues, self.state, "KEY", TODAY, NOW,
+                                       http=self.good_http(12, empty_venue_ids={"KovZpZAFAkIA"}))
+        self.assertEqual(code, 0, summary)
+        self.assertEqual(summary["failed_venues"], [])
+        self.assertEqual(summary["per_venue"]["The Fonda Theatre"], 0)
+
+    def test_e11b_accept_thin_overrides_guard_once(self):
+        self.state.write_text(json.dumps({"future_rows": 400, "last_success_at": "2026-10-19T09:00:00-07:00"}))
+        # spread=40 puts the second event at +70 days so the liveness horizon passes; only the thin-feed guard is under test here
+        code, summary = self.run_quiet(self.index, self.venues, self.state, "KEY", TODAY, NOW, http=self.good_http(2, spread=40), accept_thin=True)
+        self.assertEqual(code, 0, summary)
+        self.assertEqual(json.loads(self.state.read_text())["future_rows"], 40)
+
+    def test_e13_missing_key_exits_3_before_fetch(self):
+        code, summary = self.run_quiet(self.index, self.venues, self.state, "", TODAY, NOW, http=self.good_http())
+        self.assertEqual(code, 3)
+        self.assertEqual(self.calls, 0)
+
+    def test_e14_round_trip_and_outside_bytes_identical(self):
+        code, summary = self.run_quiet(self.index, self.venues, self.state, "KEY", TODAY, NOW, http=self.good_http(12))
+        self.assertEqual(code, 0, summary)
+        concerts, _ = wd.load_data(self.index)
+        self.assertEqual(len(concerts), self.n_past + 12 * 20)  # 20 TM ids across 19 venues: Shrine has two
+        before, after = self.before.decode(), self.index.read_text()
+        self.assertEqual(before.split("const CONCERTS = [")[0].split("<!--LAST_REFRESH:START-->")[0],
+                         after.split("const CONCERTS = [")[0].split("<!--LAST_REFRESH:START-->")[0])
+        self.assertEqual(before.split("<!--LAST_REFRESH:END-->")[1].split("const CONCERTS = [")[0],
+                         after.split("<!--LAST_REFRESH:END-->")[1].split("const CONCERTS = [")[0])
+        self.assertEqual(before.split("const WISHLIST_ARTISTS")[1], after.split("const WISHLIST_ARTISTS")[1])
+        self.assertNotIn("Tame Impala", after)
+        self.assertFalse(list(self.tmp.glob("*.tmp")), "verify temp file must be removed")
+
+    def test_e15_stamp_text(self):
+        self.assertEqual(rc.stamp_text(TODAY, 212, 19), "Data refreshed: October 26, 2026 &bull; 212 upcoming shows across 19 venues")
+        self.run_quiet(self.index, self.venues, self.state, "KEY", TODAY, NOW, http=self.good_http(12))
+        after = self.index.read_text()
+        inner = after.split("<!--LAST_REFRESH:START-->")[1].split("<!--LAST_REFRESH:END-->")[0]
+        self.assertEqual(inner, rc.stamp_text(TODAY, 240, 19))
+
+    def test_e16_state_on_success_preserves_foreign_keys(self):
+        foreign = {"last_digest_at": "2026-10-19T09:10:00-07:00", "last_digest_covered_through": "2026-10-19T09:05:00-07:00",
+                   "last_tests_status": "ok", "last_push_status": "ok", "last_refresh_rc": "0"}
+        self.state.write_text(json.dumps(foreign))
+        code, summary = self.run_quiet(self.index, self.venues, self.state, "KEY", TODAY, NOW, http=self.good_http(12))
+        st = json.loads(self.state.read_text())
+        self.assertEqual(st["last_attempt_status"], "ok")
+        self.assertEqual(st["last_success_at"], NOW.isoformat(timespec="seconds"))
+        self.assertEqual(st["last_attempt_at"], NOW.isoformat(timespec="seconds"))
+        self.assertEqual(st["future_rows"], 240)
+        self.assertEqual(len(st["per_venue"]), 19)
+        self.assertEqual(st["failed_venues"], [])
+        self.assertIn("venue_seen", summary)
+        for k, v in foreign.items():
+            self.assertEqual(st[k], v, k)
+
+    def test_e17_liveness_floor_fails_loud_after_write(self):
+        code, summary = self.run_quiet(self.index, self.venues, self.state, "KEY", TODAY, NOW, http=self.good_http(1))
+        # 20 future rows total, newest date only 30 days out → liveness fails, data still written
+        self.assertEqual(code, 1)
+        self.assertNotEqual(self.index.read_bytes(), self.before)
+        self.assertEqual(json.loads(self.state.read_text())["last_attempt_status"], "liveness_failed")
+
+    def test_e14b_parse_failure_is_exit_2_not_systemexit(self):
+        self.index.write_text(self.before.decode().replace("const CONCERTS = [", "const CONCERTS = [ {broken", 1))
+        code, summary = self.run_quiet(self.index, self.venues, self.state, "KEY", TODAY, NOW, http=self.good_http(12))
+        self.assertEqual(code, 2)
+        self.assertEqual(json.loads(self.state.read_text())["last_attempt_status"], "parse")
 
 
 if __name__ == "__main__":

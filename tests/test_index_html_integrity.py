@@ -101,7 +101,12 @@ class TestIndexHtmlIntegrity(unittest.TestCase):
         for c in self.concerts:
             d = date.fromisoformat(c["date"])
             self.assertGreaterEqual(d.year, 2026)
-            self.assertLessEqual(d.year, 2027)  # generous upper bound
+            self.assertLessEqual(d.year, date.today().year + 2)  # generous upper bound
+
+    def test_refresh_markers_present_once(self):
+        src = (ROOT / "index.html").read_text(encoding="utf-8")
+        self.assertEqual(src.count("<!--LAST_REFRESH:START-->"), 1)
+        self.assertEqual(src.count("<!--LAST_REFRESH:END-->"), 1)
 
     def test_venue_set_is_known(self):
         unknown = {c["venue"] for c in self.concerts} - KNOWN_VENUES
