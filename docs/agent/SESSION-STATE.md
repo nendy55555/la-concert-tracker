@@ -1,50 +1,81 @@
 # Session State
 
-**Last updated:** 2026-10-25 (diagnosis + build gate for the Ticketmaster feed)
+**Last updated:** 2026-10-25 (build shipped)
 
 ## Current state
-- **440 concerts**, 18 canonical venues (+Peppermint Club defensive entry), Apr 2026 – Dec 2026.
-- Data last refreshed 2026-06-02 and never pushed. Local HEAD is 2026-04-24. origin/main has one extra commit, "Create CNAME" (2026-05-14). The June data lives only in the working tree.
-- Live site serves the April data (399 shows): http://concerts.thomasnendick.com. HTTPS on that domain returns nothing. GitHub Pages never provisioned a cert.
-- Also deployed at https://nendy55555.github.io/la-concert-tracker/.
-- Weekly email sends every Sunday from the Cowork task `weekly-concert-email` (09:03 PT, Haiku). It is not in Claude Code's scheduled-task list. It landed every week since June except 2026-09-13 and 2026-09-20.
-- 23 future rows remain. 39 of 40 watchlist artists have no LA show in the array.
-- The one watchlist hit, Tame Impala at Kia Forum on 2026-11-14, does not exist. Slayer plays the Forum that night.
-- Static site: zero Claude runtime dependency.
-- Watchlist persistence: localStorage + optional GitHub Gist sync (gear icon in header).
-- Tests: 43 Python + 9 JS parity. `bash tests/run_all.sh` < 2s.
+- **Live feed.** `scripts/refresh_concerts.py` pulls upcoming music events
+  from the Ticketmaster Discovery API for the venues in `scripts/venues.json`.
+  `scripts/weekly_run.sh` runs refresh, tests, git push and digest. The
+  Sunday Cowork task calls it once the prompt swap below is done.
+- **443 upcoming shows** across 19 venues, 860 rows with history.
+- Live at http://concerts.thomasnendick.com, header reads "Data refreshed:
+  October 25, 2026 · 443 upcoming shows across 19 venues".
+- First live refresh: exit 0, `failed_venues` empty, liveness passed (newest
+  date 2027-10-16). Tame Impala ghost row gone.
+- State in `data/refresh_state.json`: `last_refresh_rc: "0"`,
+  `last_tests_status: ok`, `last_push_status: ok`, plus `last_digest_at` and
+  `last_digest_covered_through`.
+- Digest first line names every failure class. Current digest: 0 watchlist
+  shows at the 19 venues in the next 180 days; 13 on-sale drops in the next
+  14 days (System Of A Down at the Rose Bowl, QOTSA and 2hollis at Kia Forum,
+  CHVRCHES and Two Door Cinema Club at the Palladium, Ashe at the Wiltern).
+- Tests: 74 Python, JS parity 20/20, wrapper checks E26/E27.
+  `bash tests/run_all.sh` runs green in about 3 seconds.
+- Static site, zero Claude runtime dependency. Watchlist persistence:
+  localStorage + optional GitHub Gist sync (gear icon in header).
 
 ## In-flight
-**Concert-feed build: gate passed, not yet built.**
-- Spec, eval set (33 code-graded cases), plan (Tasks 0 to 9) and two blind reviews with adjudication live in `docs/agent/specs/concert-feed/` (SPEC.md, EVALS.md, PLAN.md, REVIEW.md).
-- The build runs in a fresh session, per the gate.
-- Decisions from the 2026-10-25 interview:
-  - Only the 19 current venues.
-  - The email leads with "new since last week".
-  - The refresh folds into the Sunday Cowork task.
+Nothing in code.
+
+### Waiting on Thomas
+1. **Swap the Cowork prompt.** Open the `weekly-concert-email` task in the
+   Cowork app and replace the prompt with this one line:
+   ```
+   bash "/Users/thomasnendick/Documents/Claude/Projects/LA Concert Tracker/scripts/weekly_run.sh"
+   ```
+   Until the swap, Sunday runs the old prompt. It sends the new-format digest
+   on today's data but does not refresh.
+2. **Enable HTTPS.** Open github.com/nendy55555/la-concert-tracker, then
+   Settings, then Pages. Tick "Enforce HTTPS". Until then
+   https://concerts.thomasnendick.com returns nothing.
+3. **Verify the first Cowork run** on the new prompt. Read
+   `/Users/thomasnendick/Documents/Claude/Projects/LA Concert Tracker/logs/weekly_run.log`
+   for `refresh: ok`, `tests: ok` and `git: pushed`.
 
 ## Known issues
-- **No auto-refresh of `CONCERTS`** — data is hardcoded in `index.html` and only updates when a human (or scheduled scraper) edits it. Manually refreshed 2026-06-02; will go stale again.
-- ~435 events have empty `onSaleDate`/`presaleDate`.
-- Fonda Theatre and Troubadour data thin (JS-rendered, Firecrawl scraped poorly).
-- ~320 entries have `spotifyMonthlyListeners: 0`.
-- Many watchlist artists (Disco Lines, Chris Lake, Mau P, Cloonee, Wes Mills, ATRIP) play untracked venues — LA State Historic Park, Sound Nightclub, Echoplex, Time Nightclub. Consider expanding venue list.
-- Possible stale entry: Tame Impala 2026-11-14 may actually be a 2025 show (Deadbeat tour ends Sep 2026). Worth verifying. Verified 2026-10-25: no such show at the Kia Forum. See the 2026-10-25 session.
-- `weekly_digest.py` doesn't fetch the user's gist — UI-added artists don't flow into the weekly email yet.
-- **Matcher over-fires.** The digest and the UI both match watchlist names by substring in either direction. "Dave" hits Dave Hause and Dave Koz. Fix is in the plan, Task 5.
-- **Header date is hardcoded.** `index.html` header still says "Data refreshed: March 31, 2026".
-- **Calendar cannot reach 2027.** `prevMonth`/`nextMonth` clamp to one year, and `currentYear = 2026` is hardcoded.
-- **Digest parser breaks on certain names (latent).** The digest's JS-to-JSON parser fails on names containing `, Word:` or curly quotes. No current row hits it. Task 2a.
+- **Hollywood Bowl duplicates (pre-existing, untouched).** `run_all.sh` warns
+  about 2 duplicate rows in past data: Orville Peck 2026-09-18, Jon Bellion
+  2026-09-24.
+- **Gist wiring gap.** `weekly_digest.py` doesn't fetch the user's gist, so
+  artists added in the UI don't reach the weekly email yet.
+- **Hollywood Bowl LA Phil season.** Check it in May 2027.
+- **`watchlistAnywhere` flag.** Idea only, not built.
+- **Feed rows.** `spotifyMonthlyListeners` is 0 on feed rows.
+- **Empty on-sale dates.** ~435 events have empty `onSaleDate`/`presaleDate`.
+- **Thin venues.** Fonda Theatre and Troubadour data is thin (JS-rendered,
+  Firecrawl scraped poorly).
+- **Untracked venues.** Watchlist artists Disco Lines, Chris Lake, Mau P,
+  Cloonee, Wes Mills and ATRIP play venues outside the 19 (LA State Historic
+  Park, Sound, Echoplex, Time Nightclub). Mau P plays BMO Stadium on
+  2027-01-30 by choice.
 
 ## Recent sessions (newest first)
 
-### 2026-10-25: Diagnosis and build gate (Thomas: "haven't heard of new concerts in months")
-- The send path was fine. The data was the problem.
-- Probed the Ticketmaster Discovery API live with Row 5's key. Every tracked venue is covered: Wiltern 72 upcoming music events, Regent 88, Fonda 53, Troubadour 25, Palladium 44, Novo 35, Kia Forum 36, Roxy 31, El Rey 15, Bowl 14, Intuit 70, Crypto.com 106 (includes non-music).
-- All 19 venue ids resolved. El Rey's live entity is `Z6r9jZkv7e`.
-- Watchlist artists with LA dates on Ticketmaster in the next 8 months: 5 of 40. Most are festivals at NOS Events Center. Mau P plays BMO Stadium on 2027-01-30, outside the 19 venues by Thomas's choice.
-- Gate artifacts written. Critic round 1 found 3 blocking issues: the parser breaks on real names and `SystemExit` fires in the verify path; rollback erased the failure evidence; the tests hardcode 2027. Round 2 found 2 blocking issues: the zero-rows guard protected a venue for one week only; a refresh crash never reached the email.
-- All blocking findings accepted and folded into the plan. Stopped at two rounds.
+### 2026-10-25: Diagnosis, gate, build (Thomas: "haven't heard of new concerts in months")
+- **Diagnosis.** The send path was fine. The data was the problem. Probed the
+  Ticketmaster Discovery API with Row 5's key. Every tracked venue is covered.
+  Watchlist artists with LA dates on Ticketmaster in the next 8 months: 5 of
+  40, mostly festivals at NOS Events Center.
+- **Gate.** SPEC, EVALS (33 code-graded cases) and PLAN (Tasks 0 to 9) written
+  in `docs/agent/specs/concert-feed/`. Two blind reviews. 5 blocking findings
+  in total, all accepted and folded into the plan. Round 1: the parser broke on
+  real names and `SystemExit` fired in the verify path; rollback erased the
+  failure evidence; tests hardcoded 2027. Round 2: the zero-rows guard
+  protected a venue for one week only; a refresh crash never reached the
+  email. Stopped at two rounds.
+- **Build.** Tasks 0 to 9 are committed on `main` and pushed. Built through
+  implementer subagents in this session, since the app refused to open a fresh
+  one. Details in [[la-concert-tracker]] and the brain log.
 
 ### 2026-06-02 — Data refresh (user flagged stale emails)
 - Diagnosed: weekly emails were sending fine but data hadn't moved in ~5.5 weeks. Root cause = no scraper; `CONCERTS` is a static JS array.
@@ -78,10 +109,5 @@
 - Full reports in `archive/AUDIT.md`, `archive/HARDENING-REPORT.md`, `archive/POST-MAX-PLAYBOOK.md`.
 
 ## Next-session entry points
-1. **Build the concert-feed plan in a fresh session.** Start with Task 0 (git fast-forward, then commit the June work). End with Task 9: the first live refresh, a push, and a test send to Thomas only.
-2. **After the build, swap the Cowork task prompt** (Thomas does this). Open the `weekly-concert-email` task in the Cowork app and replace the prompt with this single line:
-   ```
-   bash "/Users/thomasnendick/Documents/Claude/Projects/LA Concert Tracker/scripts/weekly_run.sh"
-   ```
-3. **Enable HTTPS for the custom domain** (Thomas does this). Open github.com/nendy55555/la-concert-tracker, then Settings → Pages, and tick "Enforce HTTPS". The custom domain gets a cert once the box is ticked.
-4. **Carry-overs:** Hollywood Bowl LA Phil season check May 2027, `watchlistAnywhere` flag, Gist wiring (`weekly_digest.py` fetches the gist via `GIST_PAT` + `GIST_ID`).
+1. **Verify the first Cowork run** on the new prompt (Waiting on Thomas, item 3).
+2. **Optional:** `watchlistAnywhere` flag, Gist wiring.
