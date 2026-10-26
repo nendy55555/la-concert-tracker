@@ -21,3 +21,6 @@ npm-debug.log*
 
 # Secrets
 .env
+
+# Weekly run logs
+logs/

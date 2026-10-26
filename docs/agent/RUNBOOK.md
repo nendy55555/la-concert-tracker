@@ -8,8 +8,8 @@ Written for future-you with minimal or no Claude access.
 - **Data:** `CONCERTS` and `WISHLIST_ARTISTS` arrays inside `index.html`.
 - **Weekly digest:** `scripts/weekly_digest.py` (Python 3.11+ stdlib only).
 - **Tests:** `tests/` — run with `bash tests/run_all.sh`.
-- **Scheduled task:** `weekly-concert-email`, Sunday 09:03 PT. Runs `python3 scripts/weekly_digest.py --email` (sends via Gmail SMTP). Claude does no reasoning in the send path.
-- **Credentials:** `.env` in project root with `GMAIL_SENDER` + `GMAIL_APP_PASSWORD` (gitignored). Template at `.env.example`.
+- **Scheduled task:** `weekly-concert-email`, Sunday 09:03 PT. Runs `bash scripts/weekly_run.sh` (refresh, tests, commit and push, then the digest send via Gmail SMTP). Claude does no reasoning in the send path.
+- **Credentials:** `.env` in project root with `GMAIL_SENDER`, `GMAIL_APP_PASSWORD` and `TM_DISCOVERY_API_KEY` (gitignored). Template at `.env.example`.
 
 ## 1. Run the weekly digest manually
 
@@ -56,15 +56,30 @@ Two paths:
 4. Run `bash tests/run_all.sh` — must pass.
 5. `git add -A && git commit -m "data: ..." && git push`.
 
-**Path B — bulk refresh:**
-This still requires Claude (or a human with Firecrawl) because per-venue HTML parsers are not hardened. To do it without Claude:
-1. Pick a venue (e.g. `https://www.hollywoodbowl.com/events/`).
-2. Open in browser, copy the calendar data.
-3. Paste into a scratch file and hand-transform to CONCERT row format.
-4. Paste into `index.html` in the correct date order.
-5. Run tests, commit, push.
+**Path B — bulk refresh from Ticketmaster:**
+1. `python3 scripts/refresh_concerts.py` (add `--dry-run` to fetch and report without writing).
+2. `bash tests/run_all.sh`
+3. `git add -A && git commit -m "data: refresh" && git push`
 
-This path is deliberately manual because Claude-driven scrapes failed in production (see DECISIONS.md and `docs/agent/archive/weekly-concert-email.prompt.v1.md`).
+Exit codes, from the header of `scripts/refresh_concerts.py`:
+
+| Code | Meaning |
+|---|---|
+| 0 | ok |
+| 1 | liveness failed after a successful write |
+| 2 | `CONCERTS` unparseable |
+| 3 | config or key missing (`TM_DISCOVERY_API_KEY`) |
+| 4 | every venue fetch failed |
+| 5 | thin-feed guard (see the `--accept-thin` note) |
+| 6 | post-write verification failed (nothing written) |
+
+Notes:
+- A venue shows `(zero_rows)` or `(fetch)` in the email: its id in
+  `venues.json` is wrong, or Ticketmaster renamed the entity. Look it up
+  with `venues.json?keyword=` and check `venue_seen` in a `--dry-run`.
+- Exit 5 (thin feed) after a real drop, such as a venue leaving
+  Ticketmaster: run `python3 scripts/refresh_concerts.py --accept-thin`
+  once. The guard then re-baselines.
 
 ## 4. Deploy
 
@@ -125,6 +140,12 @@ Rotate every ~6 months as hygiene.
 ### Symptom: tests pass locally but scheduled task fails
 **Cause:** the task runs under a different Python (or none). Check the task's log output.
 **Fix:** `which python3` — should be `/usr/bin/python3` or similar with 3.11+. If not, edit the prompt to use an absolute path to your Python.
+
+### Symptom: email first line says `STALE` or `Note:`
+**Cause:** the first line names the failure class (see DECISIONS.md,
+2026-10-26 entry "The email names every failure class").
+**Fix:** run `python3 scripts/refresh_concerts.py` by hand, read its stderr,
+then read `logs/weekly_run.log`.
 
 ## 8. Data shape — reference
 

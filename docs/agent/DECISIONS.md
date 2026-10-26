@@ -76,3 +76,31 @@ Append-only. Each entry: date, decision, reasoning, reversibility notes.
 - The digest script parses the array out of the HTML reliably; the regex is simple and tested.
 
 **Reversibility:** Moderate. Would require the parser + the app's inline script to load from JSON, plus a GitHub Pages path.
+
+---
+
+## 2026-10-25: Ticketmaster Discovery API replaces the static array
+
+**Decision:** `CONCERTS` future rows come from the Discovery API for the 19 tracked venues, weekly, inside the Sunday task. Past rows stay. Future rows without a Ticketmaster id at a covered venue are dropped. A venue that fails to fetch, or returns zero rows after having rows, keeps its rows and is named in the email.
+
+**Why:** No scraper existed; the data went stale twice (2026-06, 2026-10) and the one remaining watchlist row was a show that did not exist. The API is public, keyed, covers every tracked venue, and returns on-sale and presale times. Scraping-decay route 1: find the real source.
+
+**Tradeoffs:** Only Ticketmaster-listed shows appear. The Hollywood Bowl's LA Phil season may be partly missing (check May 2027). Watchlist artists at untracked venues stay invisible by Thomas's choice (2026-10-25 interview).
+
+**Reversibility:** Delete `scripts/refresh_concerts.py` from `weekly_run.sh`; the array is still a plain literal in `index.html`.
+
+---
+
+## 2026-10-25: Matcher: exact on attractions, 5-char floor on substrings
+
+**Decision:** With `artists` present, a watch term matches only by exact normalized equality. Legacy rows keep the substring rule for terms of 5+ normalized characters.
+
+**Why:** "Dave" matched Dave Hause and Dave Koz in the first API probe. Precision over recall: a false hit in the weekly email costs trust, a miss costs one show.
+
+---
+
+## 2026-10-25: The email names every failure class
+
+**Decision:** The first line of every digest states data age and appends any of: failed refresh attempt, refresh exited non-zero without recording a result, no refresh attempt in the last 2 days, venues not refreshed, tests failed (data rolled back), site push failed. The wrapper writes the refresh exit code, test and push outcomes into `data/refresh_state.json`; it never restores that file wholesale.
+
+**Why:** The June and October incidents were both "the email kept looking healthy". A rollback that erased its own evidence would recreate that.
