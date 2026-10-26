@@ -1,6 +1,12 @@
 {
-  "generated_at": "2026-10-25T21:24:25-07:00",
+  "generated_at": "2026-10-25T21:32:13-07:00",
   "as_of": "2026-04-20",
+  "feed": {
+    "status": "bootstrap",
+    "age_days": -188,
+    "line": "Data refreshed -188 days ago (443 upcoming shows). Feed connected 2026-10-25: 443 upcoming shows loaded."
+  },
+  "new_since": null,
   "horizon_days": 300,
   "onsale_days": 14,
   "watch_hits": [
@@ -68,22 +74,153 @@
       "on_sale_date": "",
       "presale_date": "",
       "days_until": 173
-    },
-    {
-      "watchlist_artist": "Tame Impala",
-      "name": "Tame Impala",
-      "date": "2026-11-14",
-      "venue": "Kia Forum",
-      "genre": "Indie/Folk",
-      "support": "",
-      "ticket_url": "",
-      "ticket_vendor": "",
-      "on_sale_date": "",
-      "presale_date": "",
-      "days_until": 208
     }
   ],
-  "onsale_hits": [],
+  "onsale_hits": [
+    {
+      "name": "SLAYER: Reign In Blood 40th Anniversary 2026",
+      "date": "2026-11-13",
+      "venue": "Kia Forum",
+      "sale_kind": "presale",
+      "sale_at": "2026-04-21T12:00",
+      "days_until": 1,
+      "ticket_vendor": "Ticketmaster",
+      "ticket_url": "https://www.ticketmaster.com/slayer-reign-in-blood-40th-anniversary-inglewood-california-11-13-2026/event/09006491FCE11F4B",
+      "is_watched": false
+    },
+    {
+      "name": "Teddy Swims: The UGLY Tour",
+      "date": "2026-11-18",
+      "venue": "Kia Forum",
+      "sale_kind": "presale",
+      "sale_at": "2026-04-21T10:00",
+      "days_until": 1,
+      "ticket_vendor": "Ticketmaster",
+      "ticket_url": "https://www.ticketmaster.com/teddy-swims-the-ugly-tour-inglewood-california-11-18-2026/event/0900648DE2F4A831",
+      "is_watched": false
+    },
+    {
+      "name": "THE DAMNED - FINAL DAMNATION 50",
+      "date": "2026-11-17",
+      "venue": "The Wiltern",
+      "sale_kind": "presale",
+      "sale_at": "2026-04-22T10:00",
+      "days_until": 2,
+      "ticket_vendor": "Ticketmaster",
+      "ticket_url": "https://www.ticketmaster.com/the-damned-final-damnation-50-los-angeles-california-11-17-2026/event/09006490C927A3CF",
+      "is_watched": false
+    },
+    {
+      "name": "The Neighbourhood: THE WOURLD TOUR",
+      "date": "2026-12-05",
+      "venue": "Kia Forum",
+      "sale_kind": "presale",
+      "sale_at": "2026-04-22T10:00",
+      "days_until": 2,
+      "ticket_vendor": "Ticketmaster",
+      "ticket_url": "https://www.ticketmaster.com/the-neighbourhood-the-wourld-tour-inglewood-california-12-05-2026/event/0900645403D3F8BA",
+      "is_watched": false
+    },
+    {
+      "name": "The R&B Tour - Starring Usher Raymond & Chris Brown",
+      "date": "2026-11-15",
+      "venue": "SoFi Stadium",
+      "sale_kind": "presale",
+      "sale_at": "2026-04-22T14:00",
+      "days_until": 2,
+      "ticket_vendor": "Ticketmaster",
+      "ticket_url": "https://www.ticketmaster.com/the-rb-tour-starring-usher-raymond-inglewood-california-11-15-2026/event/0A006494C5CE878D",
+      "is_watched": false
+    },
+    {
+      "name": "SLAYER: Reign In Blood 40th Anniversary 2026",
+      "date": "2026-11-14",
+      "venue": "Kia Forum",
+      "sale_kind": "presale",
+      "sale_at": "2026-04-23T09:00",
+      "days_until": 3,
+      "ticket_vendor": "Ticketmaster",
+      "ticket_url": "https://www.ticketmaster.com/slayer-reign-in-blood-40th-anniversary-inglewood-california-11-14-2026/event/09006494FCC71433",
+      "is_watched": false
+    },
+    {
+      "name": "SLAYER: Reign In Blood 40th Anniversary 2026",
+      "date": "2026-11-13",
+      "venue": "Kia Forum",
+      "sale_kind": "onsale",
+      "sale_at": "2026-04-24T10:00",
+      "days_until": 4,
+      "ticket_vendor": "Ticketmaster",
+      "ticket_url": "https://www.ticketmaster.com/slayer-reign-in-blood-40th-anniversary-inglewood-california-11-13-2026/event/09006491FCE11F4B",
+      "is_watched": false
+    },
+    {
+      "name": "SLAYER: Reign In Blood 40th Anniversary 2026",
+      "date": "2026-11-14",
+      "venue": "Kia Forum",
+      "sale_kind": "onsale",
+      "sale_at": "2026-04-24T10:00",
+      "days_until": 4,
+      "ticket_vendor": "Ticketmaster",
+      "ticket_url": "https://www.ticketmaster.com/slayer-reign-in-blood-40th-anniversary-inglewood-california-11-14-2026/event/09006494FCC71433",
+      "is_watched": false
+    },
+    {
+      "name": "Teddy Swims: The UGLY Tour",
+      "date": "2026-11-18",
+      "venue": "Kia Forum",
+      "sale_kind": "onsale",
+      "sale_at": "2026-04-24T10:00",
+      "days_until": 4,
+      "ticket_vendor": "Ticketmaster",
+      "ticket_url": "https://www.ticketmaster.com/teddy-swims-the-ugly-tour-inglewood-california-11-18-2026/event/0900648DE2F4A831",
+      "is_watched": false
+    },
+    {
+      "name": "THE DAMNED - FINAL DAMNATION 50",
+      "date": "2026-11-17",
+      "venue": "The Wiltern",
+      "sale_kind": "onsale",
+      "sale_at": "2026-04-24T10:00",
+      "days_until": 4,
+      "ticket_vendor": "Ticketmaster",
+      "ticket_url": "https://www.ticketmaster.com/the-damned-final-damnation-50-los-angeles-california-11-17-2026/event/09006490C927A3CF",
+      "is_watched": false
+    },
+    {
+      "name": "The Neighbourhood: THE WOURLD TOUR",
+      "date": "2026-12-05",
+      "venue": "Kia Forum",
+      "sale_kind": "onsale",
+      "sale_at": "2026-04-24T10:00",
+      "days_until": 4,
+      "ticket_vendor": "Ticketmaster",
+      "ticket_url": "https://www.ticketmaster.com/the-neighbourhood-the-wourld-tour-inglewood-california-12-05-2026/event/0900645403D3F8BA",
+      "is_watched": false
+    },
+    {
+      "name": "The R&B Tour - Starring Usher Raymond & Chris Brown",
+      "date": "2026-11-15",
+      "venue": "SoFi Stadium",
+      "sale_kind": "onsale",
+      "sale_at": "2026-04-27T14:00",
+      "days_until": 7,
+      "ticket_vendor": "Ticketmaster",
+      "ticket_url": "https://www.ticketmaster.com/the-rb-tour-starring-usher-raymond-inglewood-california-11-15-2026/event/0A006494C5CE878D",
+      "is_watched": false
+    },
+    {
+      "name": "Shaboozey w/ Carter Faith",
+      "date": "2026-10-27",
+      "venue": "Greek Theatre",
+      "sale_kind": "onsale",
+      "sale_at": "2026-05-01T10:00",
+      "days_until": 11,
+      "ticket_vendor": "Ticketmaster",
+      "ticket_url": "https://www.ticketmaster.com/event/Z7r9jZ1A70kPt",
+      "is_watched": false
+    }
+  ],
   "per_artist": {
     "Jack Harlow": [
       {
@@ -132,21 +269,7 @@
     ],
     "Fred Again": [],
     "Kendrick Lamar": [],
-    "Tame Impala": [
-      {
-        "watchlist_artist": "Tame Impala",
-        "name": "Tame Impala",
-        "date": "2026-11-14",
-        "venue": "Kia Forum",
-        "genre": "Indie/Folk",
-        "support": "",
-        "ticket_url": "",
-        "ticket_vendor": "",
-        "on_sale_date": "",
-        "presale_date": "",
-        "days_until": 208
-      }
-    ],
+    "Tame Impala": [],
     "Disco Lines": [],
     "Notion": [],
     "James Hype": [],
@@ -210,10 +333,10 @@
     "Cloonee": []
   },
   "totals": {
-    "concerts": 440,
+    "concerts": 860,
     "watchlist_artists": 40,
-    "watch_hits": 6,
-    "onsale_hits": 0,
-    "artists_with_shows": 5
+    "watch_hits": 5,
+    "onsale_hits": 13,
+    "artists_with_shows": 4
   }
 }
