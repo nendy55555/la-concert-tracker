@@ -1,0 +1,42 @@
+{
+  "_embedded": {"events": [
+    {
+      "name": "Headliner Name: The Big Tour",
+      "id": "vvG1TEST0001",
+      "url": "https://www.ticketmaster.com/headliner-name-los-angeles-11-20-2026/event/vvG1TEST0001",
+      "dates": {"start": {"localDate": "2026-11-20", "localTime": "20:00:00", "dateTime": "2026-11-21T04:00:00Z", "dateTBD": false, "dateTBA": false},
+                "timezone": "America/Los_Angeles", "status": {"code": "onsale"}},
+      "sales": {"public": {"startDateTime": "2026-05-29T17:00:00Z", "startTBD": false},
+                "presales": [{"startDateTime": "2026-05-28T17:00:00Z", "endDateTime": "2026-05-29T05:00:00Z", "name": "Venue Presale"},
+                             {"startDateTime": "2026-05-28T19:00:00Z", "endDateTime": "2026-05-29T05:00:00Z", "name": "Artist Presale"}]},
+      "classifications": [{"primary": true, "segment": {"name": "Music"}, "genre": {"name": "Hip-Hop/Rap"}, "subGenre": {"name": "Rap"}}],
+      "_embedded": {"venues": [{"name": "The Novo by Microsoft", "id": "KovZ917A25f"}],
+                    "attractions": [{"name": "Headliner Name"}, {"name": "Opener Name"}]}
+    },
+    {
+      "name": "Los Angeles Lakers vs. Phoenix Suns",
+      "id": "vvG1TEST0002",
+      "url": "https://www.ticketmaster.com/lakers/event/vvG1TEST0002",
+      "dates": {"start": {"localDate": "2026-11-21", "dateTBD": false, "dateTBA": false}, "status": {"code": "onsale"}},
+      "classifications": [{"primary": true, "segment": {"name": "Sports"}, "genre": {"name": "Basketball"}}],
+      "_embedded": {"venues": [{"name": "Crypto.com Arena", "id": "KovZpZAEdntA"}], "attractions": [{"name": "Los Angeles Lakers"}]}
+    },
+    {
+      "name": "Cancelled Band",
+      "id": "vvG1TEST0003",
+      "url": "https://www.ticketmaster.com/cancelled/event/vvG1TEST0003",
+      "dates": {"start": {"localDate": "2026-12-01", "dateTBD": false, "dateTBA": false}, "status": {"code": "cancelled"}},
+      "classifications": [{"primary": true, "segment": {"name": "Music"}, "genre": {"name": "Rock"}}],
+      "_embedded": {"venues": [{"name": "The Wiltern", "id": "KovZpZAEAl6A"}], "attractions": [{"name": "Cancelled Band"}]}
+    },
+    {
+      "name": "TBD Act",
+      "id": "vvG1TEST0004",
+      "url": "https://www.ticketmaster.com/tbd/event/vvG1TEST0004",
+      "dates": {"start": {"dateTBD": true, "dateTBA": false}, "status": {"code": "onsale"}},
+      "classifications": [{"primary": true, "segment": {"name": "Music"}, "genre": {"name": "Pop"}}],
+      "_embedded": {"venues": [{"name": "Troubadour", "id": "KovZpa4eIe"}], "attractions": [{"name": "TBD Act"}]}
+    }
+  ]},
+  "page": {"size": 200, "totalElements": 5, "totalPages": 2, "number": 0}
+}

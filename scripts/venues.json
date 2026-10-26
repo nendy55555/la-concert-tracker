@@ -1,0 +1,21 @@
+[
+  {"name": "Hollywood Bowl",      "tmVenueIds": ["KovZpZAFFvJA"], "vendor": "Hollywood Bowl Box Office", "tier": 3},
+  {"name": "Greek Theatre",       "tmVenueIds": ["KovZpa2Hxe"],   "vendor": "Ticketmaster", "tier": 3},
+  {"name": "Kia Forum",           "tmVenueIds": ["KovZpZAEkn6A"], "vendor": "Ticketmaster", "tier": 3},
+  {"name": "Crypto.com Arena",    "tmVenueIds": ["KovZpZAEdntA"], "vendor": "AXS", "tier": 4},
+  {"name": "SoFi Stadium",        "tmVenueIds": ["KovZ917ACh0"],  "vendor": "Ticketmaster", "tier": 4},
+  {"name": "The Wiltern",         "tmVenueIds": ["KovZpZAEAl6A"], "vendor": "Ticketmaster", "tier": 2},
+  {"name": "The Fonda Theatre",   "tmVenueIds": ["KovZpZAFAkIA"], "vendor": "Ticketmaster", "tier": 2},
+  {"name": "Troubadour",          "tmVenueIds": ["KovZpa4eIe"],   "vendor": "Troubadour Box Office", "tier": 1},
+  {"name": "YouTube Theater",     "tmVenueIds": ["KovZ917AJue"],  "vendor": "Ticketmaster", "tier": 3},
+  {"name": "The Regent Theater",  "tmVenueIds": ["KovZpZAJ6daA"], "vendor": "Ticketmaster", "tier": 1},
+  {"name": "Rose Bowl",           "tmVenueIds": ["KovZpZAEA66A"], "vendor": "Ticketmaster", "tier": 4},
+  {"name": "Hollywood Palladium", "tmVenueIds": ["KovZpZAEAlaA"], "vendor": "Ticketmaster", "tier": 2},
+  {"name": "Academy LA",          "tmVenueIds": ["KovZpZAdIAtA"], "vendor": "Academy LA Box Office", "tier": 2},
+  {"name": "El Rey Theatre",      "tmVenueIds": ["Z6r9jZkv7e"],   "vendor": "Ticketmaster", "tier": 1},
+  {"name": "Intuit Dome",         "tmVenueIds": ["KovZ917Acq0"],  "vendor": "AXS", "tier": 4},
+  {"name": "Shrine Auditorium",   "tmVenueIds": ["KovZpa3u7e", "KovZpZAdEanA"], "vendor": "AXS", "tier": 3},
+  {"name": "The Novo",            "tmVenueIds": ["KovZ917A25f"],  "vendor": "AXS", "tier": 2},
+  {"name": "The Roxy Theatre",    "tmVenueIds": ["KovZpZAFAIFA"], "vendor": "The Roxy Box Office", "tier": 1},
+  {"name": "The Peppermint Club", "tmVenueIds": ["KovZ917A2k0"],  "vendor": "Peppermint Club Box Office", "tier": 1}
+]

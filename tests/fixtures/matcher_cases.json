@@ -1,0 +1,13 @@
+[
+  {"watch": "Dave",          "artists": ["Dave Hause & The Mermaid"], "name": "Dave Hause & The Mermaid", "expect": false},
+  {"watch": "Dave",          "artists": ["Dave"],                     "name": "Dave",                     "expect": true},
+  {"watch": "Fred Again",    "artists": ["Fred again.."],             "name": "Fred again..",             "expect": true},
+  {"watch": "JCole",         "artists": ["J. Cole"],                  "name": "J. Cole",                  "expect": true},
+  {"watch": "Odesza",        "artists": ["ODESZA"],                   "name": "ODESZA: The Last Goodbye", "expect": true},
+  {"watch": "Jungle",        "artists": ["Jungle Brothers"],          "name": "Jungle Brothers",          "expect": false},
+  {"watch": "Polo & Pan",    "artists": ["Empire of the Sun", "Polo & Pan"], "name": "Empire of the Sun", "expect": true},
+  {"watch": "Kendrick Lamar","artists": [],                           "name": "Kendrick Lamar - Grand National Tour", "expect": true},
+  {"watch": "Dave",          "artists": [],                           "name": "Dave Koz Christmas Tour", "expect": false},
+  {"watch": "Notion",        "artists": [],                           "name": "Notion",                   "expect": true},
+  {"watch": "Chris Lake",    "artists": [],                           "name": "Chris Lake b2b Fisher",    "expect": true}
+]

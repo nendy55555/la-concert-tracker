@@ -1,0 +1,22 @@
+{
+  "_embedded": {"events": [
+    {
+      "name": "Page Two Artist",
+      "id": "vvG1TEST0005",
+      "url": "https://www.ticketmaster.com/p2/event/vvG1TEST0005",
+      "dates": {"start": {"localDate": "2027-01-15", "localTime": "21:00:00", "dateTBD": false, "dateTBA": false}, "status": {"code": "onsale"}},
+      "sales": {"public": {"startDateTime": "2026-10-23T17:00:00Z"}},
+      "classifications": [{"primary": true, "segment": {"name": "Music"}, "genre": {"name": "Jazz"}}],
+      "_embedded": {"venues": [{"name": "The Novo by Microsoft", "id": "KovZ917A25f"}], "attractions": [{"name": "Page Two Artist"}]}
+    },
+    {
+      "name": "Headliner Name: The Big Tour",
+      "id": "vvG1TEST0001",
+      "url": "https://www.ticketmaster.com/headliner-name-los-angeles-11-20-2026/event/vvG1TEST0001",
+      "dates": {"start": {"localDate": "2026-11-20", "dateTBD": false, "dateTBA": false}, "status": {"code": "onsale"}},
+      "classifications": [{"primary": true, "segment": {"name": "Music"}, "genre": {"name": "Hip-Hop/Rap"}}],
+      "_embedded": {"venues": [{"name": "The Novo by Microsoft", "id": "KovZ917A25f"}], "attractions": [{"name": "Headliner Name"}]}
+    }
+  ]},
+  "page": {"size": 200, "totalElements": 5, "totalPages": 2, "number": 1}
+}
